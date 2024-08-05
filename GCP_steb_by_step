@@ -1,0 +1,55 @@
+### Szczegóły Krok po Kroku: Utworzenie Projektu na Google Cloud Platform (GCP)
+
+1. **Zaloguj się do Google Cloud Console:**
+   - Otwórz [Google Cloud Console](https://console.cloud.google.com/).
+   - Zaloguj się przy użyciu swojego konta Google.
+
+2. **Utwórz Nowy Projekt:**
+   - Na stronie głównej Google Cloud Console kliknij rozwijane menu w lewym górnym rogu obok logo Google Cloud.
+   - Wybierz „IAM & admin” > „Projekty”.
+   - Kliknij „Utwórz projekt” (przycisk w górnym menu).
+   - Wprowadź nazwę projektu (np. „AI Chatbot Project”).
+   - Wybierz lokalizację (opcjonalnie; zazwyczaj „Brak”).
+   - Kliknij „Utwórz”.
+
+3. **Skonfiguruj Billing:**
+   - Po utworzeniu projektu kliknij „Zarządzanie płatnościami” lub „Billing” w lewym menu.
+   - Kliknij „Dodaj konto rozliczeniowe” (jeśli nie masz jeszcze konta).
+   - Wprowadź informacje o płatności. Możesz skorzystać z darmowych kredytów dostępnych dla nowych użytkowników.
+
+4. **Włącz API:**
+   - W Google Cloud Console, przejdź do „API & Services” > „Library”.
+   - Wyszukaj i włącz potrzebne API, takie jak:
+     - „Cloud Functions API”
+     - „Cloud Firestore API”
+     - „Cloud Pub/Sub API” (jeśli potrzebujesz)
+     - „Compute Engine API” (jeśli planujesz używać maszyn wirtualnych)
+
+5. **Utwórz i Skonfiguruj Cloud Functions:**
+   - Przejdź do „Cloud Functions” w lewym menu.
+   - Kliknij „Utwórz funkcję”.
+   - Wprowadź nazwę funkcji i wybierz region.
+   - Wybierz „Trigger” jako „HTTP” (dla webhooków Telegrama).
+   - Wprowadź kod funkcji w edytorze online lub wgraj plik zip z kodem.
+   - Kliknij „Utwórz” i poczekaj na wdrożenie.
+
+6. **Skonfiguruj Cloud Firestore:**
+   - Przejdź do „Firestore” w lewym menu.
+   - Kliknij „Utwórz bazę danych”.
+   - Wybierz tryb „Test” (darmowy) lub „Produkcyjny” (wymaga płatności).
+   - Skonfiguruj lokalizację i kliknij „Utwórz”.
+
+7. **Zainstaluj Google Cloud SDK (opcjonalnie):**
+   - Pobierz i zainstaluj Google Cloud SDK, jeśli planujesz używać terminala do zarządzania GCP.
+   - Postępuj zgodnie z instrukcjami dostępnymi na [stronie Google Cloud SDK](https://cloud.google.com/sdk/docs/install).
+
+8. **Skonfiguruj Uprawnienia IAM (opcjonalnie):**
+   - W „IAM & admin” > „IAM” możesz dodać członków i przypisać im odpowiednie role, takie jak „Cloud Functions Developer” lub „Firestore User”.
+
+### Podsumowanie:
+
+- **Tworzenie projektu** w GCP obejmuje założenie projektu, skonfigurowanie płatności, włączenie odpowiednich API, i utworzenie oraz konfigurację usług takich jak Cloud Functions i Firestore.
+- **Użycie API**: Włącz potrzebne API do obsługi funkcji chmurowych i bazy danych.
+- **Skonfigurowanie usług**: Wdrożenie funkcji serwerless, konfiguracja bazy danych i ewentualne ustawienia dodatkowych narzędzi.
+
+Dzięki tym krokom, będziesz mieć skonfigurowany projekt na GCP, gotowy do budowy i wdrożenia Twojego API.

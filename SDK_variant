@@ -1,0 +1,141 @@
+### Konfiguracja Google Cloud Functions – Dokończenie etapu
+
+**Cel**: Ustawić środowisko i wdrożyć funkcję Google Cloud Functions, aby umożliwić komunikację między Twoim API a Telegram botem.
+
+#### Kroki w Google Cloud Platform:
+
+1. **Stworzenie i Wdrożenie Google Cloud Function**
+
+   1. **Przygotowanie Kodu Funkcji**
+
+      - W katalogu projektu, stwórz plik `functions/main.py`, który zawiera kod funkcji. Na przykład:
+
+        ```python
+        def telegram_bot_function(request):
+            request_json = request.get_json(silent=True)
+            request_args = request.args
+
+            if request_json and 'message' in request_json:
+                message = request_json['message']
+                # Logika przetwarzania wiadomości z Telegrama
+                return f"Received message: {message}"
+
+            return 'No message received'
+        ```
+
+      - Stwórz plik `functions/requirements.txt`, który zawiera wymagane biblioteki, jeśli są potrzebne. Na przykład:
+
+        ```
+        Flask==2.0.1
+        ```
+
+   2. **Wdrożenie Funkcji**
+
+      - Zaloguj się do Google Cloud SDK, jeśli jeszcze tego nie zrobiłeś:
+
+        ```bash
+        gcloud auth login
+        ```
+
+      - Ustaw projekt, w którym chcesz wdrożyć funkcję:
+
+        ```bash
+        gcloud config set project [YOUR_PROJECT_ID]
+        ```
+
+      - Wykonaj polecenie do wdrożenia funkcji:
+
+        ```bash
+        gcloud functions deploy telegram_bot_function \
+        --runtime python310 \
+        --trigger-http \
+        --allow-unauthenticated \
+        --entry-point telegram_bot_function
+        ```
+
+      - Ustaw odpowiednie parametry:
+        - `--runtime python310`: Użyj odpowiedniego runtime dla swojej funkcji.
+        - `--trigger-http`: Funkcja będzie uruchamiana przez HTTP.
+        - `--allow-unauthenticated`: Pozwól na dostęp do funkcji bez uwierzytelniania.
+
+   3. **Testowanie Funkcji**
+
+      - Po wdrożeniu, uzyskasz URL do wywołania funkcji. Sprawdź, czy funkcja działa poprawnie, wysyłając zapytania HTTP do tego URL-a.
+
+        ```bash
+        curl -X POST [FUNCTION_URL] -H "Content-Type: application/json" -d '{"message":"Hello, World!"}'
+        ```
+
+#### Kroki w Repozytorium GitHub:
+
+1. **Struktura Repozytorium**
+
+   - Upewnij się, że struktura repozytorium zawiera wszystkie pliki potrzebne do wdrożenia i jest zgodna z zasadami Django. Powinna wyglądać następująco:
+
+     ```
+     /myproject
+       /src
+         /functions
+           main.py
+           requirements.txt
+         /myapp
+           __init__.py
+           models.py
+           views.py
+           urls.py
+           ...
+         manage.py
+       /docs
+       README.md
+     ```
+
+2. **Dodanie Kodu do Repozytorium**
+
+   - Dodaj kod funkcji do repozytorium GitHub:
+
+     ```bash
+     git add src/functions/main.py src/functions/requirements.txt
+     git commit -m "Add Google Cloud Function code"
+     git push origin main
+     ```
+
+3. **Dokumentacja**
+
+   - Zaktualizuj plik `README.md`, aby zawierał instrukcje dotyczące konfiguracji i wdrożenia funkcji. Na przykład:
+
+     ```markdown
+     ## Google Cloud Functions
+
+     ### Deployment
+
+     1. Navigate to the `src/functions` directory.
+     2. Deploy the function using the Google Cloud CLI:
+
+        ```bash
+        gcloud functions deploy telegram_bot_function \
+        --runtime python310 \
+        --trigger-http \
+        --allow-unauthenticated \
+        --entry-point telegram_bot_function
+        ```
+
+     3. Test the function using the provided URL.
+
+     ### Directory Structure
+
+     The directory structure for this project follows the Django conventions and includes:
+
+     - `/src/functions` for Google Cloud Functions code.
+     - `/src/myapp` for Django app code.
+     - `/docs` for project documentation.
+     - `README.md` for project overview and instructions.
+     ```
+
+### Podsumowanie
+
+1. **Wykonaj kod funkcji i plik requirements.txt w katalogu `src/functions`.**
+2. **Wdróż funkcję przy użyciu Google Cloud SDK z odpowiednimi parametrami.**
+3. **Testuj funkcję, aby upewnić się, że działa poprawnie.**
+4. **Zaktualizuj repozytorium GitHub z kodem funkcji i dokumentacją zgodnie z zasadami Django.**
+
+Po wykonaniu tych kroków, funkcja Google Cloud będzie gotowa do użycia i zintegrowana z Twoim projektem. Jeśli masz pytania dotyczące konkretnych kroków lub potrzebujesz dodatkowej pomocy, daj znać!

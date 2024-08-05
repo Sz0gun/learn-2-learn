@@ -1,0 +1,78 @@
+Masz rację, jeśli celem jest stworzenie chatbotów obsługujących użytkowników za pośrednictwem Telegrama, to hosting frontendu nie jest bezpośrednio potrzebny, ponieważ komunikacja odbywa się za pośrednictwem aplikacji Telegram.
+
+### Zaktualizowany Plan dla Frontendu:
+
+1. **Bez Frontendu**: 
+   - W przypadku, gdy aplikacja opiera się na komunikacji z użytkownikami przez Telegram, nie ma potrzeby tworzenia dodatkowego frontendu. Cała interakcja z użytkownikami odbywa się za pośrednictwem Telegrama.
+
+2. **Integracja z Telegram API**:
+   - Użyj Telegram API do budowy chatbota, który będzie odpowiadał na zapytania użytkowników.
+   - Skonfiguruj webhooki Telegrama do wywoływania odpowiednich funkcji w chmurze, które będą obsługiwać zapytania.
+
+### Skorygowany Plan:
+
+1. **Utworzenie Projektu GCP**
+   - Jak wcześniej.
+
+2. **Skonfiguruj Billing Account**
+   - Jak wcześniej.
+
+3. **Użycie Serwerless Functions**
+   - Jak wcześniej, do obsługi zapytań i odpowiedzi.
+
+4. **Przechowywanie Danych**
+   - Jak wcześniej, używając Firebase Firestore.
+
+5. **Trening Modelu AI**
+   - Jak wcześniej, na Google Colab.
+
+6. **Integracja z Telegram API**
+   - Zarejestruj swojego bota w Telegramie i uzyskaj token API.
+   - Skonfiguruj webhooki Telegrama, aby wywoływały funkcje w Google Cloud Functions.
+
+### Przykładowa Konfiguracja Webhooka w Google Cloud Functions:
+
+```python
+from flask import Flask, request
+import requests
+import json
+
+app = Flask(__name__)
+
+# Token Telegram Bot
+TELEGRAM_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
+API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    update = request.get_json()
+
+    # Extract message and chat ID
+    message = update['message']['text']
+    chat_id = update['message']['chat']['id']
+    
+    # Handle message and prepare response
+    response_text = handle_message(message)
+    
+    # Send response back to Telegram
+    payload = {
+        'chat_id': chat_id,
+        'text': response_text
+    }
+    requests.post(API_URL, json=payload)
+    return '', 200
+
+def handle_message(message):
+    # Implement your logic to handle the message
+    return "Your response here"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
+```
+
+### Podsumowanie:
+
+- **Bez potrzeby frontendu**: Skoro komunikacja z użytkownikami odbywa się za pośrednictwem Telegrama, nie ma potrzeby hostowania frontendu.
+- **Integracja z Telegram API**: Skoncentruj się na konfiguracji webhooków i obsłudze komunikacji z Telegramem przy użyciu Google Cloud Functions.
+
+Zaktualizowany plan eliminuje potrzebę hostowania frontendu i koncentruje się na integracji z Telegramem oraz zarządzaniu funkcjami backendowymi.

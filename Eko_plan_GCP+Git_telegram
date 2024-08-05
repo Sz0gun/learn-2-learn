@@ -1,0 +1,78 @@
+Tak, użycie GitHub jest zalecane, szczególnie jeśli chcesz stworzyć portfolio dla swojego pierwszego projektu. GitHub jest narzędziem do zarządzania wersjami kodu, które umożliwia przechowywanie, współdzielenie i śledzenie zmian w kodzie źródłowym. Jest to również standardowa praktyka w branży oprogramowania.
+
+### Korekta Planu z Uwzględnieniem GitHub
+
+1. **Utworzenie Projektu GCP**
+   - Jak wcześniej.
+
+2. **Skonfiguruj Billing Account**
+   - Jak wcześniej.
+
+3. **Użycie Serwerless Functions**
+   - Jak wcześniej, do obsługi zapytań i odpowiedzi.
+
+4. **Przechowywanie Danych**
+   - Jak wcześniej, używając Firebase Firestore.
+
+5. **Trening Modelu AI**
+   - Jak wcześniej, na Google Colab.
+
+6. **Integracja z Telegram API**
+   - Jak wcześniej, z konfiguracją webhooków i obsługą komunikacji.
+
+7. **Użycie GitHub**
+   - **Utworzenie Repozytorium:**
+     - Zarejestruj się lub zaloguj do GitHub.
+     - Utwórz nowe repozytorium dla swojego projektu.
+     - Przechowuj cały kod źródłowy, w tym pliki konfiguracyjne i dokumentację w repozytorium.
+
+   - **Zarządzanie Wersjami:**
+     - Użyj Git do śledzenia zmian w kodzie, zarządzania wersjami i współpracy z innymi.
+     - Dodaj pliki do repozytorium, wykonuj commit i push zmian.
+   
+   - **Dokumentacja:**
+     - W repozytorium umieść pliki README.md oraz inne dokumenty, takie jak dokumentacja API, pliki konfiguracyjne oraz instrukcje uruchamiania.
+   
+   - **Pokazanie Postępów:**
+     - Regularnie aktualizuj repozytorium, aby pokazać postęp prac nad projektem.
+
+### Przykładowe Kroki na GitHub:
+
+1. **Tworzenie Repozytorium:**
+   - Zaloguj się na GitHub.
+   - Kliknij "New repository" na stronie głównej.
+   - Nadaj nazwę repozytorium, dodaj opis i wybierz "Public" lub "Private" w zależności od preferencji.
+   - Kliknij "Create repository".
+
+2. **Dodawanie Plików:**
+   - Skonfiguruj lokalne repozytorium git:
+     ```bash
+     git init
+     git add .
+     git commit -m "Initial commit"
+     ```
+   - Połącz lokalne repozytorium z GitHub:
+     ```bash
+     git remote add origin <repo-url>
+     git push -u origin master
+     ```
+
+3. **Zarządzanie Wersjami:**
+   - Regularnie commituj zmiany:
+     ```bash
+     git add <file>
+     git commit -m "Describe changes"
+     git push
+     ```
+
+4. **Dokumentacja:**
+   - Utwórz plik `README.md` z opisem projektu, instrukcjami uruchamiania, oraz linkami do dokumentacji API.
+   - Umieść wszelkie dodatkowe dokumenty w repozytorium, takie jak `api_overview.md`, `endpoints/`, oraz pliki konfiguracyjne.
+
+### Podsumowanie:
+
+- **GitHub jest użyteczny do zarządzania wersjami kodu, przechowywania dokumentacji i prezentowania projektu jako portfolio.**
+- **Dodanie GitHub do planu projektu nie wymaga zmiany w podstawowej strukturze planu, ale wzbogaca projekt o profesjonalne zarządzanie kodem i dokumentacją.**
+- **GitHub umożliwia śledzenie postępów i współpracę, co jest ważne w każdym projekcie oprogramowania.**
+
+Dzięki GitHub, Twój projekt będzie dobrze udokumentowany i dostępny jako portfolio, co może być przydatne w przyszłości, zwłaszcza przy aplikacjach o pracę czy współpracy nad projektami.

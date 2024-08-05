@@ -1,0 +1,44 @@
+Oczekiwanym rezultatem doprowadzenia projektu do użytkowania jest funkcjonalne API, które umożliwia:
+
+    Interakcję z Telegramem:
+        Bot Telegram obsługujący zapytania użytkowników.
+
+    Wykorzystanie dwóch modeli AI:
+        Model GPT-4 do prowadzenia konwersacji w sposób najbardziej zbliżony do naturalnego.
+        Model stworzony na bazie spójnej pracy open-source'owych modeli z biblioteki Transformers.
+
+    Analiza i przetwarzanie odpowiedzi:
+        Bot analizuje odpowiedzi użytkowników, ocenia ich poprawność, i prowadzi logiczny dialog w celu wyjaśnienia treści zapytania.
+
+    Przechowywanie i analiza danych konwersacyjnych:
+        Zapisywanie wszystkich konwersacji do bazy danych w chmurze.
+        Wykorzystanie zgromadzonych danych do dalszego trenowania modelu Transformers, aby zbliżyć jego efekty do wyników uzyskiwanych przy użyciu GPT-4.
+
+    Ekonomiczne wykorzystanie zasobów:
+        Konfiguracja środowiska chmurowego do obsługi początkowo małej liczby użytkowników (5 użytkowników, 200 obiektów zapytań).
+        Możliwość przyszłego skalowania aplikacji do obsługi większej liczby użytkowników.
+
+    Reprezentacja projektu jako portfolio:
+        Dokumentacja i kod źródłowy projektu przechowywany w repozytorium GitHub jako przykład pierwszego projektu do portfolio.
+
+Plan w skrócie:
+
+    Skonfigurować Google Cloud Functions:
+        Wybór odpowiedniego środowiska wykonawczego (Python 3.9).
+        Przesłanie kodu źródłowego z repozytorium GitHub.
+
+    Utworzyć funkcjonalne API:
+        Implementacja webhooków do obsługi zapytań od bota Telegram.
+        Integracja modeli AI (GPT-4 oraz Transformers).
+
+    Konfiguracja bazy danych w chmurze:
+        Wybór darmowej opcji chmurowej bazy danych (np. Google Firestore).
+
+    Monitorowanie i analiza:
+        Zapewnienie odpowiednich narzędzi do monitorowania działania API i analizy zebranych danych konwersacyjnych.
+
+    Dokumentacja i hosting:
+        Utworzenie pełnej dokumentacji projektu.
+        Hostowanie projektu na GitHub jako portfolio.
+
+Te kroki i oczekiwania zapewnią, że projekt będzie funkcjonalny, ekonomiczny i łatwy do zrozumienia oraz konfiguracji przez osobę, która nie miała wcześniej doświadczenia z tworzeniem podobnych aplikacji.

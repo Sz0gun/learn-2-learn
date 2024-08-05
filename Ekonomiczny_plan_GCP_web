@@ -1,0 +1,162 @@
+### Skorygowany Plan Obejmujący Użycie Dwóch Chatbotów
+
+Plan obejmuje utworzenie dwóch chatbotów: jeden z wykorzystaniem modelu GPT-4 oraz drugi z wykorzystaniem modeli open-source z biblioteki Transformers. Celem jest porównanie wyników obu chatbotów i wykorzystanie tych danych do dalszego treningu modelu open-source. 
+
+#### 1. Stworzenie i Konfiguracja GCP Projektu
+
+1. **Utwórz projekt w Google Cloud Platform (GCP)**
+   - Wejdź na [Google Cloud Console](https://console.cloud.google.com/).
+   - Utwórz nowy projekt.
+
+2. **Skonfiguruj Billing Account**
+   - Skonfiguruj darmowe kredyty dostępne po rejestracji.
+   - Skorzystaj z darmowego planu, aby uniknąć dodatkowych kosztów na starcie.
+
+#### 2. Użycie Serwerless Functions
+
+**Google Cloud Functions**: Użyj darmowego limitu wywołań (2 miliony wywołań miesięcznie) do obsługi zapytań i odpowiedzi.
+- Koszt: Darmowe do 2 milionów wywołań miesięcznie.
+
+#### 3. Przechowywanie Danych
+
+**Firebase Firestore**: Skorzystaj z darmowego planu Firebase Firestore, który oferuje 1 GB darmowej przestrzeni na dane i do 50,000 odczytów, 20,000 zapisów i 20,000 usunięć miesięcznie.
+- Koszt: Darmowe w granicach podanych limitów.
+
+#### 4. Modele AI
+
+**Hugging Face Transformers**: Wykorzystaj darmowe modele pretrenowane z biblioteki Transformers, które można uruchomić lokalnie na małej infrastrukturze.
+
+**Google Colab**: Do początkowego treningu modelu możesz użyć darmowego środowiska Google Colab z dostępem do GPU.
+
+#### 5. Przechowywanie Danych z Konwersacji
+
+**Cloud Storage**: Przechowuj dane z konwersacji w Google Cloud Storage. Darmowy plan oferuje 5 GB miejsca.
+
+#### 6. Hosting
+
+**Firebase Hosting**: Użyj darmowego hostingu na Firebase do hostowania prostego frontendu. Darmowy plan oferuje 1 GB przestrzeni dyskowej i 10 GB transferu miesięcznie.
+
+#### 7. Narzędzia do Analizy Danych
+
+**Google Sheets**: Przechowuj dane z konwersacji w Google Sheets, co pozwoli na łatwą analizę i eksportowanie danych.
+
+### Lista TO DO:
+
+1. **Utworzenie Projektu GCP**
+   - Utwórz nowy projekt w Google Cloud Console.
+   - Skonfiguruj darmowy billing account.
+
+2. **Implementacja Backend (Django)**
+   - Utwórz środowisko wirtualne i zainstaluj Django oraz Django REST framework.
+   - Skonfiguruj PostgreSQL jako bazę danych dla lokalnego rozwoju.
+
+3. **Stworzenie Cloud Functions**
+   - Utwórz funkcje do obsługi zapytań i odpowiedzi z użytkownikami.
+   - Skonfiguruj Cloud Functions w Google Cloud Console.
+
+4. **Przechowywanie Danych (Firestore)**
+   - Skonfiguruj Firebase Firestore i utwórz kolekcje do przechowywania danych z konwersacji.
+   - Zintegruj Cloud Functions z Firestore.
+
+5. **Trening modelu na Google Colab**
+   - Przygotuj i przetestuj modele AI na Google Colab.
+   - Zapisz model na Google Drive lub Cloud Storage.
+
+6. **Zintegrowanie modeli AI**
+   - Wykorzystaj Cloud Functions do uruchamiania modeli AI w odpowiedzi na zapytania użytkowników.
+   - Przykładowy kod funkcji:
+
+```python
+from transformers import pipeline
+
+def answer_query(request):
+    data = request.get_json()
+    user_query = data.get('query')
+    nlp = pipeline('question-answering', model='distilbert-base-cased-distilled-squad')
+    answer = nlp({'question': user_query, 'context': 'kontekst dla modelu'})
+    return {'answer': answer['answer']}
+```
+
+7. **Hosting Frontendu (Firebase Hosting)**
+   - Utwórz prosty frontend w React i hostuj go na Firebase Hosting.
+
+8. **Analiza Danych (Google Sheets)**
+   - Skonfiguruj eksport danych z Firestore do Google Sheets.
+
+### Skorygowany Plan dla Dwóch Chatbotów:
+
+#### Chatbot 1: GPT-4
+
+- **Korzystanie z API OpenAI GPT-4**: 
+  - Użyj OpenAI API do obsługi zapytań i odpowiedzi.
+  - Zintegruj API z Cloud Functions.
+
+#### Chatbot 2: Model Transformers
+
+- **Trening na Google Colab**:
+  - Wykorzystaj Google Colab do treningu modelu na podstawie danych z konwersacji GPT-4.
+  - Zapisz model na Google Drive lub Cloud Storage.
+
+#### Integracja i Zarządzanie Danymi
+
+- **Firestore**:
+  - Przechowuj dane z konwersacji obu chatbotów w Firebase Firestore.
+  - Użyj Firestore do zarządzania danymi użytkowników i konwersacji.
+
+- **Google Sheets**:
+  - Eksportuj dane z Firestore do Google Sheets dla dalszej analizy.
+
+#### Przykładowy Kod Funkcji dla Chatbotów
+
+1. **Cloud Function do obsługi GPT-4**:
+   
+```python
+import openai
+
+def gpt4_query(request):
+    data = request.get_json()
+    user_query = data.get('query')
+    response = openai.Completion.create(
+        engine="gpt-4",
+        prompt=user_query,
+        max_tokens=150
+    )
+    return {'answer': response.choices[0].text.strip()}
+```
+
+2. **Cloud Function do obsługi Modelu Transformers**:
+
+```python
+from transformers import pipeline
+
+def transformers_query(request):
+    data = request.get_json()
+    user_query = data.get('query')
+    nlp = pipeline('question-answering', model='distilbert-base-cased-distilled-squad')
+    answer = nlp({'question': user_query, 'context': 'kontekst dla modelu'})
+    return {'answer': answer['answer']}
+```
+
+### Analiza Najbardziej Ekonomicznego Planu
+
+#### Usługi i Koszty
+
+- **Google Cloud Functions**: Darmowe do 2 milionów wywołań miesięcznie.
+- **Firebase Firestore**: Darmowe w granicach 1 GB danych i określonych limitów operacji.
+- **Google Cloud Storage**: Darmowe do 5 GB miejsca.
+- **Google Colab**: Darmowe z dostępem do GPU.
+- **Firebase Hosting**: Darmowe do 1 GB przestrzeni dyskowej i 10 GB transferu miesięcznie.
+
+### Podsumowanie
+
+Plan obejmuje użycie dwóch chatbotów, jednego z GPT-4 i drugiego z modeli open-source, do obsługi zapytań użytkowników. Dane z konwersacji będą przechowywane w Firestore i analizowane przy pomocy Google Sheets. Wszystkie usługi korzystają z darmowych planów, co minimalizuje koszty na starcie. Skala projektu jest elastyczna i można ją łatwo zwiększyć w przyszłości. 
+
+#### Ekonomiczny Plan - Podsumowanie
+
+- **Google Cloud Functions**: Używane do obsługi zapytań i odpowiedzi.
+- **Firebase Firestore**: Przechowywanie danych z konwersacji.
+- **Google Colab**: Trening modeli AI.
+- **Firebase Hosting**: Hosting frontendu.
+- **Google Sheets**: Analiza danych.
+
+Taki plan minimalizuje koszty i złożoność na początkowym etapie projektu, zapewniając jednocześnie skalowalność w przyszłości.
