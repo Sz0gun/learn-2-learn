@@ -1,7 +1,7 @@
 FROM python:3.9-slim
 
 # Ustawienie katalogu roboczego
-WORKDIR /app
+WORKDIR /project
 
 # pliki zależności z instalacja
 COPY requirements.txt ./
