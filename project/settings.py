@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
@@ -134,8 +134,20 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Additional Security Settings
-SECURE_SSL_REDIRECT = True  # Wymusza przekierowanie HTTP na HTTPS
-SESSION_COOKIE_SECURE = True  # Cookies sesji tylko przez HTTPS
-CSRF_COOKIE_SECURE = True  # CSRF cookie tylko przez HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Dodaje nagłówek SSL, aby zapewnić, że aplikacja działa za bezpiecznym połączeniem (HTTPS).
+
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() == 'true'
+# Przekierowuje wszystkie żądania HTTP na HTTPS, aby wymusić bezpieczne połączenie.
+
+SESSION_COOKIE_SECURE = True
+# Ustawia flagę `Secure` dla ciasteczek sesji, co oznacza, że ciasteczka będą przesyłane tylko przez połączenie HTTPS.
+
+CSRF_COOKIE_SECURE = True
+# Ustawia flagę `Secure` dla ciasteczek CSRF, co oznacza, że ciasteczka CSRF będą przesyłane tylko przez połączenie HTTPS.
+
+X_FRAME_OPTIONS = 'DENY'
+# Zapobiega osadzaniu strony w ramkach (iframe), co chroni przed atakami clickjacking.
+
 
 
