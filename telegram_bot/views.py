@@ -16,15 +16,20 @@ def telegram_webhook(request):
             return JsonResponse({"status": "ok"}, status=200)
         except Exception as e:
             context = {
-        'message': {e}
-    }
+                'message': f"{e}"
+            }
             return render(request, 'index.html', context)
+    elif request.method == 'GET':
+        context = {
+        'message': '!!!GET'
+    }
+        return render(request, 'index.html', context)
             # print(f"Błąd: {e}!!!")  # Logowanie błędu
             # return JsonResponse({"status": "error"}, status=500)
     # return JsonResponse({"status": "bad request"}, status=400)
     else:
         context = {
-        'message': '!' {e}
+        'message': '!'
     }
     # print("ok")
     return render(request, 'index.html', context)
