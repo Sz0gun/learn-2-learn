@@ -69,9 +69,24 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.x/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
-}
+if 'DATABASE_URL' in os.environ:
+    # Jeśli zmienna środowiskowa DATABASE_URL jest ustawiona, używaj jej do konfiguracji bazy danych
+    DATABASES = {
+        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    }
+else:
+    # Jeśli DATABASE_URL nie jest ustawione, używaj lokalnej bazy danych PostgreSQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'beaver_local_db',
+            'USER': 'beaver_local',  # Nazwa użytkownika lokalnej bazy danych
+            'PASSWORD': 'beaver',  # Hasło użytkownika lokalnej bazy danych
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.x/ref/settings/#auth-password-validators
