@@ -1,6 +1,7 @@
 from django.urls import path
-from . import views
+from telegram_bot.views import my_page_view, telegram_webhook
 
 urlpatterns = [
-    path('telegram/webhook/', views.telegram_webhook, name='telegram_webhook'),
+    path('telegram/webhook/', telegram_webhook, name='telegram_webhook'),
+    path('my-page/', my_page_view, name='my_page'),
 ]

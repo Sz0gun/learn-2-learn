@@ -1,6 +1,4 @@
-import functions_framework
+from project.wsgi import application
 
-@functions_framework.http
-def telegram_bot(request):
-    # Here goes the logic of your Telegram bot
-    return "Hello, Telegram Bot!"
+# main.py acts as the entry point for WSGI applications
+app = application
