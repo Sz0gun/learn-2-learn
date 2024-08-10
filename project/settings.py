@@ -139,13 +139,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Dodaje nagłówek SSL, aby zapewnić, że aplikacja działa za bezpiecznym połączeniem (HTTPS).
 
-# SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() == 'true'
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() == 'true'
 # Przekierowuje wszystkie żądania HTTP na HTTPS, aby wymusić bezpieczne połączenie.
 
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'True').lower() == 'true'
 # Ustawia flagę `Secure` dla ciasteczek sesji, co oznacza, że ciasteczka będą przesyłane tylko przez połączenie HTTPS.
 
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', 'True').lower() == 'true'
 # Ustawia flagę `Secure` dla ciasteczek CSRF, co oznacza, że ciasteczka CSRF będą przesyłane tylko przez połączenie HTTPS.
 
 X_FRAME_OPTIONS = 'DENY'

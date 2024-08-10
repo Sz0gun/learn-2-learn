@@ -9,12 +9,16 @@ import json
 def telegram_webhook(request):
 
     if request.method == "POST":
-        # try:
-            data = json.loads(request.body)
+        try:
+            data = json.loads(request)
             # Przetwarzaj dane z Telegrama tutaj
             print(data)  # Debugowanie: sprawdź, co przychodzi z Telegrama
             return JsonResponse({"status": "ok"}, status=200)
-        # except Exception as e:
+        except Exception as e:
+            context = {
+        'message': f"Blad: {e}"
+    }
+            return render(request, 'index.html', context)
             # print(f"Błąd: {e}!!!")  # Logowanie błędu
             # return JsonResponse({"status": "error"}, status=500)
     # return JsonResponse({"status": "bad request"}, status=400)
@@ -22,7 +26,7 @@ def telegram_webhook(request):
         context = {
         'message': 'Witamy na naszej stronie!'
     }
-    print("ok")
+    # print("ok")
     return render(request, 'index.html', context)
 
 def my_page_view(request):

@@ -3,5 +3,5 @@ from telegram_bot.views import my_page_view, telegram_webhook
 
 urlpatterns = [
     path('telegram/webhook/', telegram_webhook, name='telegram_webhook'),
-    path('my-page/', my_page_view, name='my_page'),
+    path('page/', my_page_view, name='my_page'),
 ]
