@@ -1,195 +1,174 @@
-# Telegram Bot API
-
-## Opis
-Aplikacja do obsługi bota Telegram, która integruje się z dwoma modelami AI. Umożliwia przechowywanie danych konwersacyjnych oraz analizę odpowiedzi.
-
-## Struktura Repozytorium
-- `api/`: Aplikacja Django do obsługi API.
-- `project/`: Główna konfiguracja projektu Django.
-- `templates/`: Szablony HTML używane w projekcie.
-
-## Uruchamianie
-1. Skonfiguruj swoje środowisko:
-   ```bash
-   pip install -r requirements.txt
-
-
-Oto zaktualizowana wersja pliku `README.md`, z usuniętymi danymi dotyczącymi konfiguracji lokalnej bazy danych:
+Oto zaktualizowana treść pliku `README.md` dla projektu `bot-api-1`:
 
 ---
 
-# Bot-API - Telegram Bot API
+# Bot API - Telegram Bot API
 
 ## Opis projektu
 
-Bot-API to aplikacja oparta na frameworku Django, która integruje się z API Telegrama, umożliwiając tworzenie i zarządzanie chatbotami. Aplikacja jest zaprojektowana do działania w środowisku produkcyjnym na Heroku.
+Bot API to aplikacja Django, która umożliwia obsługę bota Telegrama. Projekt jest zintegrowany z usługą Heroku, gdzie jest hostowany oraz przetwarza dane za pomocą webhooków.
 
-## Struktura projektu
+## Spis treści
 
-```
-telegram-bot-api/
-│
-├── telegram_bot/
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py
-│   ├── tests.py
-│   ├── views.py
-│   └── urls.py
-│
-├── api/
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py
-│   ├── tests.py
-│   ├── views.py
-│   └── urls.py
-│
-├── project/
-│   ├── __init__.py
-│   ├── asgi.py
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-│
-├── templates/
-│   └── index.html
-│
-├── .gitignore
-├── .dockerignore
-├── Dockerfile
-├── Procfile
-├── README.md
-├── manage.py
-└── requirements.txt
-```
+- [Wymagania](#wymagania)
+- [Instalacja](#instalacja)
+- [Konfiguracja lokalna](#konfiguracja-lokalna)
+- [Konfiguracja na Heroku](#konfiguracja-na-heroku)
+- [Wdrożenie na Heroku](#wdrożenie-na-heroku)
+- [Użytkowanie](#użytkowanie)
+- [Testowanie](#testowanie)
+- [Dodatkowe informacje](#dodatkowe-informacje)
 
 ## Wymagania
 
-- Python 3.9 lub nowszy
-- Django 3.x lub nowszy
-- PostgreSQL (w środowisku Heroku)
-- Heroku CLI (jeśli wdrażasz na Heroku)
-- Docker (opcjonalnie, jeśli chcesz używać kontenerów)
+- Python 3.12
+- Django 4.2
+- Heroku CLI
+- PostgreSQL (lokalnie lub na Heroku)
 
 ## Instalacja
 
-### 1. Klonowanie repozytorium
+1. Sklonuj repozytorium:
 
-Klonuj repozytorium z GitHub:
+   ```bash
+   git clone https://github.com/your-username/telegram-bot-api.git
+   cd telegram-bot-api
+   ```
 
-```bash
-git clone https://github.com/username/telegram-bot-api.git
-cd telegram-bot-api
-```
+2. Utwórz i aktywuj wirtualne środowisko:
 
-### 2. Konfiguracja środowiska wirtualnego
+   ```bash
+   python3 -m venv botenv
+   source botenv/bin/activate
+   ```
 
-Stwórz i aktywuj środowisko wirtualne:
+3. Zainstaluj zależności:
 
-```bash
-python3 -m venv botenv
-source botenv/bin/activate
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Zainstaluj wymagane pakiety:
+4. Utwórz plik `.env` na podstawie pliku `.env.example` i dodaj klucz `SECRET_KEY`.
 
-```bash
-pip install -r requirements.txt
-```
+## Konfiguracja lokalna
 
-### 3. Migracje bazy danych
+1. Skonfiguruj lokalną bazę danych PostgreSQL:
 
-Przeprowadź migracje, aby utworzyć struktury tabel w bazie danych:
+   W pliku `project/settings.py`, skonfiguruj lokalną bazę danych PostgreSQL:
 
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
+   ```python
+   if 'DATABASE_URL' in os.environ:
+       DATABASES = {
+           'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+       }
+   else:
+       DATABASES = {
+           'default': {
+               'ENGINE': 'django.db.backends.postgresql',
+               'NAME': 'your_local_db_name',
+               'USER': 'your_local_db_user',
+               'PASSWORD': 'your_local_db_password',
+               'HOST': 'localhost',
+               'PORT': '5432',
+           }
+       }
+   ```
 
-### 4. Uruchomienie aplikacji lokalnie
+2. Uruchom migracje:
 
-Uruchom serwer deweloperski Django:
+   ```bash
+   python manage.py migrate
+   ```
 
-```bash
-python manage.py runserver
-```
+3. Uruchom lokalny serwer:
 
-Aplikacja powinna być dostępna pod adresem `http://127.0.0.1:8000/`.
+   ```bash
+   python manage.py runserver
+   ```
+
+## Konfiguracja na Heroku
+
+1. Zaloguj się do Heroku:
+
+   ```bash
+   heroku login
+   ```
+
+2. Utwórz nową aplikację na Heroku:
+
+   ```bash
+   heroku create your-app-name
+   ```
+
+3. Skonfiguruj zmienne środowiskowe:
+
+   W zakładce **Settings** na Heroku dodaj następujące zmienne środowiskowe:
+
+   - `SECRET_KEY`: Twój klucz tajny Django
+   - `DEBUG`: `False`
+   - `ALLOWED_HOSTS`: `['.herokuapp.com']`
+   - `DATABASE_URL`: automatycznie konfigurowane przez Heroku przy dodaniu dodatku Postgres
+
+4. Skonfiguruj buildpacki:
+
+   Upewnij się, że buildpacki są prawidłowo ustawione:
+
+   ```bash
+   heroku buildpacks:set heroku/python
+   ```
 
 ## Wdrożenie na Heroku
 
-### 1. Utworzenie aplikacji na Heroku
+1. Dodaj zmiany do repozytorium:
 
-Jeśli jeszcze tego nie zrobiłeś, utwórz aplikację na Heroku:
+   ```bash
+   git add .
+   git commit -m "Wdrożenie na Heroku"
+   ```
 
-```bash
-heroku create bot-api
-```
+2. Wypchnij zmiany na Heroku:
 
-### 2. Konfiguracja środowiska na Heroku
+   ```bash
+   git push heroku main
+   ```
 
-Skonfiguruj zmienne środowiskowe na Heroku:
+3. Wykonaj migracje na Heroku:
 
-```bash
-heroku config:set SECRET_KEY='your-secret-key'
-heroku config:set DEBUG=False
-heroku config:set ALLOWED_HOSTS='.herokuapp.com'
-heroku config:set DATABASE_URL='your-database-url'
-```
+   ```bash
+   heroku run python manage.py migrate
+   ```
 
-### 3. Wypchnięcie kodu na Heroku
+4. Utwórz superużytkownika dla panelu admina:
 
-Upewnij się, że wszystkie zmiany są zsynchronizowane z repozytorium GitHub, a następnie wypchnij kod na Heroku:
+   ```bash
+   heroku run python manage.py createsuperuser
+   ```
 
-```bash
-git push heroku main
-```
+## Użytkowanie
 
-### 4. Migracje na Heroku
+1. Wejdź na stronę swojego bota na Heroku, aby go przetestować.
+2. Skonfiguruj webhooki dla bota Telegrama:
 
-Po wdrożeniu, przeprowadź migracje bazy danych na Heroku:
+   ```bash
+   curl -F "url=https://your-heroku-app.herokuapp.com/telegram/webhook/" https://api.telegram.org/bot<YourBOTToken>/setWebhook
+   ```
 
-```bash
-heroku run python manage.py migrate
-```
+## Testowanie
 
-### 5. Uruchomienie aplikacji na Heroku
+1. Sprawdź logi aplikacji na Heroku:
 
-Otwórz aplikację w przeglądarce:
+   ```bash
+   heroku logs --tail
+   ```
 
-```bash
-heroku open
-```
+2. Testuj lokalnie za pomocą narzędzi takich jak `ngrok` lub `localtunnel`.
 
 ## Dodatkowe informacje
 
-### Webhooki
-
-Jeśli korzystasz z webhooków Telegrama, upewnij się, że są one poprawnie skonfigurowane i przetestowane. Możesz użyć narzędzi takich jak `ngrok`, aby tunelować lokalny serwer i testować webhooki przed wdrożeniem na produkcję.
-
-### Konfiguracja bezpieczeństwa
-
-W produkcji ważne jest, aby dodatkowo zabezpieczyć aplikację:
-- Włącz SSL na serwerze (Heroku domyślnie korzysta z SSL).
-- Sprawdź ustawienia bezpieczeństwa w `settings.py`.
-
-### Pliki statyczne i media
-
-Heroku domyślnie obsługuje pliki statyczne za pomocą Whitenoise. Upewnij się, że wszystkie pliki są prawidłowo serwowane.
-
-## Problemy i wsparcie
-
-Jeśli napotkasz problemy, sprawdź logi Heroku:
-
-```bash
-heroku logs --tail
-```
-
-W przypadku pytań lub problemów, możesz otworzyć zgłoszenie w repozytorium GitHub lub skontaktować się z autorem.
+- Aplikacja korzysta z frameworka Django do obsługi bota Telegrama.
+- W aplikacji używane są technologie takie jak Docker i Gunicorn.
+- Dla lepszej optymalizacji zaleca się przeanalizowanie konfiguracji `Procfile` oraz plików statycznych.
 
 ---
 
-Plik `README.md` zawiera teraz wszystkie istotne informacje na temat konfiguracji, wdrożenia i użytkowania aplikacji `bot-api` bez odniesienia do lokalnej konfiguracji bazy danych. Jeśli będziesz potrzebował więcej informacji, jestem do dyspozycji!
+Tę treść można dodać do pliku `README.md` w projekcie `bot-api-1`.
