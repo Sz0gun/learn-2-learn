@@ -1,174 +1,90 @@
-Oto zaktualizowana treść pliku `README.md` dla projektu `bot-api-1`:
 
----
+# Learn to Learn API - Telegram Bot API
 
-# Bot API - Telegram Bot API
+## Project Description
 
-## Opis projektu
+The bot-api-1 project is a Telegram bot application integrated with the GPT-4 AI model. The bot is managed using the Pyrogram framework and operates in both local and production environments on the Heroku platform.
 
-Bot API to aplikacja Django, która umożliwia obsługę bota Telegrama. Projekt jest zintegrowany z usługą Heroku, gdzie jest hostowany oraz przetwarza dane za pomocą webhooków.
+### Features
 
-## Spis treści
+- Communication with users via Telegram.
+- Use of the GPT-4 model to generate responses.
+- Support for different types of communication (webhooks, long polling).
+- Secure management of API keys and other sensitive information.
 
-- [Wymagania](#wymagania)
-- [Instalacja](#instalacja)
-- [Konfiguracja lokalna](#konfiguracja-lokalna)
-- [Konfiguracja na Heroku](#konfiguracja-na-heroku)
-- [Wdrożenie na Heroku](#wdrożenie-na-heroku)
-- [Użytkowanie](#użytkowanie)
-- [Testowanie](#testowanie)
-- [Dodatkowe informacje](#dodatkowe-informacje)
+## Requirements
 
-## Wymagania
+- Python 3.9+
+- Heroku account (for production deployment)
+- GPT-4 API Key
+- Dependencies listed in `requirements.txt`
 
-- Python 3.12
-- Django 4.2
-- Heroku CLI
-- PostgreSQL (lokalnie lub na Heroku)
+## Installation
 
-## Instalacja
+1. Clone the repository:
 
-1. Sklonuj repozytorium:
+    ```bash
+    git clone https://github.com/yourusername/bot-api-1.git
+    cd bot-api-1
+    ```
 
-   ```bash
-   git clone https://github.com/your-username/telegram-bot-api.git
-   cd telegram-bot-api
-   ```
+2. Create and activate a virtual environment:
 
-2. Utwórz i aktywuj wirtualne środowisko:
+    ```bash
+    python3 -m venv botenv
+    source botenv/bin/activate
+    ```
 
-   ```bash
-   python3 -m venv botenv
-   source botenv/bin/activate
-   ```
+3. Install dependencies:
 
-3. Zainstaluj zależności:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+4. Configure the `.env` file:
 
-4. Utwórz plik `.env` na podstawie pliku `.env.example` i dodaj klucz `SECRET_KEY`.
+    Create a `.env` file in the main project directory and add the following variables:
 
-## Konfiguracja lokalna
+    ```
+    GPT_API_KEY=your-gpt-api-key
+    TELEGRAM_API_ID=your-telegram-api-id
+    TELEGRAM_API_HASH=your-telegram-api-hash
+    TELEGRAM_BOT_TOKEN=your-telegram-bot-token
+    ```
 
-1. Skonfiguruj lokalną bazę danych PostgreSQL:
+5. Run the bot locally:
 
-   W pliku `project/settings.py`, skonfiguruj lokalną bazę danych PostgreSQL:
+    ```bash
+    python main.py
+    ```
 
-   ```python
-   if 'DATABASE_URL' in os.environ:
-       DATABASES = {
-           'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
-       }
-   else:
-       DATABASES = {
-           'default': {
-               'ENGINE': 'django.db.backends.postgresql',
-               'NAME': 'your_local_db_name',
-               'USER': 'your_local_db_user',
-               'PASSWORD': 'your_local_db_password',
-               'HOST': 'localhost',
-               'PORT': '5432',
-           }
-       }
-   ```
+## Deployment on Heroku
 
-2. Uruchom migracje:
+1. Log in to Heroku and create a new application.
+2. Connect the GitHub repository to Heroku.
+3. Set environment variables in the Heroku dashboard (see the "Configuring the .env file" section).
+4. Deploy the application to Heroku:
 
-   ```bash
-   python manage.py migrate
-   ```
+    ```bash
+    git push heroku main
+    ```
 
-3. Uruchom lokalny serwer:
+5. Run database migrations (if necessary):
 
-   ```bash
-   python manage.py runserver
-   ```
+    ```bash
+    heroku run python manage.py migrate
+    ```
 
-## Konfiguracja na Heroku
+## Testing
 
-1. Zaloguj się do Heroku:
+- You can test the bot locally using `ngrok` or `localtunnel` to redirect traffic to the local server.
+- In the production environment on Heroku, ensure that the bot correctly handles all scenarios.
 
-   ```bash
-   heroku login
-   ```
+## Contributions
 
-2. Utwórz nową aplikację na Heroku:
+Bug reports and suggestions for new features are welcome. If you would like to contribute to the project, please open an issue on GitHub.
 
-   ```bash
-   heroku create your-app-name
-   ```
+## License
 
-3. Skonfiguruj zmienne środowiskowe:
+The project is licensed under the MIT License.
 
-   W zakładce **Settings** na Heroku dodaj następujące zmienne środowiskowe:
-
-   - `SECRET_KEY`: Twój klucz tajny Django
-   - `DEBUG`: `False`
-   - `ALLOWED_HOSTS`: `['.herokuapp.com']`
-   - `DATABASE_URL`: automatycznie konfigurowane przez Heroku przy dodaniu dodatku Postgres
-
-4. Skonfiguruj buildpacki:
-
-   Upewnij się, że buildpacki są prawidłowo ustawione:
-
-   ```bash
-   heroku buildpacks:set heroku/python
-   ```
-
-## Wdrożenie na Heroku
-
-1. Dodaj zmiany do repozytorium:
-
-   ```bash
-   git add .
-   git commit -m "Wdrożenie na Heroku"
-   ```
-
-2. Wypchnij zmiany na Heroku:
-
-   ```bash
-   git push heroku main
-   ```
-
-3. Wykonaj migracje na Heroku:
-
-   ```bash
-   heroku run python manage.py migrate
-   ```
-
-4. Utwórz superużytkownika dla panelu admina:
-
-   ```bash
-   heroku run python manage.py createsuperuser
-   ```
-
-## Użytkowanie
-
-1. Wejdź na stronę swojego bota na Heroku, aby go przetestować.
-2. Skonfiguruj webhooki dla bota Telegrama:
-
-   ```bash
-   curl -F "url=https://your-heroku-app.herokuapp.com/telegram/webhook/" https://api.telegram.org/bot<YourBOTToken>/setWebhook
-   ```
-
-## Testowanie
-
-1. Sprawdź logi aplikacji na Heroku:
-
-   ```bash
-   heroku logs --tail
-   ```
-
-2. Testuj lokalnie za pomocą narzędzi takich jak `ngrok` lub `localtunnel`.
-
-## Dodatkowe informacje
-
-- Aplikacja korzysta z frameworka Django do obsługi bota Telegrama.
-- W aplikacji używane są technologie takie jak Docker i Gunicorn.
-- Dla lepszej optymalizacji zaleca się przeanalizowanie konfiguracji `Procfile` oraz plików statycznych.
-
----
-
-Tę treść można dodać do pliku `README.md` w projekcie `bot-api-1`.
