@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Inicjalizacja klienta Pyrogram
+openai.api_key = os.getenv("GPT_API_KEY")
 app = Client(
     "my_bot",
     api_id=os.getenv("TELEGRAM_API_ID"),
