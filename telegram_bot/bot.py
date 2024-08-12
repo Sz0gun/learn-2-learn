@@ -20,15 +20,13 @@ async def handle_message(client, message):
     user_message = message.reply_text
 
     # Query OpenAI API
-    response = openai.Completion.create(
-        engine="gpt-4",  # Use the appropriate engine
-        prompt=user_message,
+    response = openai.ChatCompletion.create(
+        model="gpt-4",  # Use the appropriate model
+        messages=[{"role": "user", "content": user_message}],
         max_tokens=150,
-        n=1,
-        stop=None,
         temperature=0.7,
     )
-    bot_response = response.choices[0].text.strip()
+    bot_response = response['choices'][0]['message']['content'].strip()
     await message.reply(bot_response)
 
 # Uruchomienie bota
