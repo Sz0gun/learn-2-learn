@@ -19,6 +19,80 @@ The bot-api-1 project is a Telegram bot application integrated with the GPT-4 AI
 - GPT-4 API Key
 - Dependencies listed in `requirements.txt`
 
+## Configuration
+
+1. **Set Up Environment Variables:**
+   - Create a `.env` file in the root directory of the project.
+   - Add the following variables to the `.env` file:
+     ```plaintext
+     TELEGRAM_API_KEY=<YOUR TELEGRAM API KEY>
+     GPT_API_KEY=<YOUR GPT API KEY>
+     SECRET_KEY=<YOUR SECRET KEY>
+     DEBUG=False
+     DATABASE_URL=<YOUR DATABASE URL>
+     ```
+
+2. **Install Dependencies:**
+   - Run the following command to install required dependencies:
+     ```bash
+     pip install -r requirements.txt
+     pip install pyrogram python-dotenv
+     ```
+
+3. **Run the Bot:**
+   - Use the following command to run the bot locally:
+     ```bash
+     python telegram_bot/bot.py
+     ```
+
+4. **Deploy to Heroku:**
+   - Ensure that your Heroku environment variables are set correctly.
+   - Deploy the bot to Heroku and check logs to verify successful deployment.
+
+## Project Structure
+
+```plaintext
+telegram-bot-api/
+│
+├── telegram_bot/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── views.py
+│   ├── urls.py
+│   └── bot.py  # main bot logic using Pyrogram
+│
+├── api/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── views.py
+│   └── urls.py
+│
+├── project/
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+│
+├── templates/
+│   └── index.html
+│
+├── .gitignore
+├── .dockerignore
+├── Dockerfile
+├── Procfile
+├── README.md
+├── manage.py
+├── requirements.txt
+└── .env  # Environment variables (excluded from version control)
+
+
 ## Installation
 
 1. Clone the repository:
