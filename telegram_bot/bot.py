@@ -17,19 +17,33 @@ app = Client(
 )
 
 @app.on_message(filters.text)
-async def handle_message(client, message):
-    user_message = message.reply_text
+async def handle(client, message):
+    # Odbierz treść wiadomości użytkownika
+    user_message = message.text
 
-    # Query OpenAI API
-    response = openai.ChatCompletion.create(
-        model="gpt-4",  # Use the appropriate model
-        messages=[{"role": "user", "content": user_message}],
-        max_tokens=150,
-        temperature=0.7,
-    )
-    bot_response = response['choices'][0]['message']['content'].strip()
-    await message.reply(bot_response)
+    # Przygotuj dane do wysłania do modelu AI
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": user_message}
+    ]
 
-# Uruchomienie bota
+    try:
+        # Wyślij wiadomość do modelu OpenAI i odbierz odpowiedź
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=messages
+        )
+
+        # Odbierz odpowiedź modelu AI
+        bot_response = response.choices[0].message['content'].strip()
+
+        # Prześlij odpowiedź modelu AI do użytkownika w czacie
+        await message.reply(bot_response)
+
+    except Exception as e:
+        # W razie błędu, przekaż informację do użytkownika
+        await message.reply("Sorry, I couldn't process your request.")
+        print(f"Error: {e}")
+
 if __name__ == "__main__":
     app.run()
