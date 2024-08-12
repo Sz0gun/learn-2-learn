@@ -30,7 +30,7 @@ async def handle(client, message):
     try:
         # Wyślij wiadomość do modelu OpenAI i odbierz odpowiedź
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",
             messages=messages
         )
 
