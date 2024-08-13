@@ -7,11 +7,11 @@ from pyrogram import Client, filters
 # Ładowanie zmiennych środowiskowych z pliku .env
 from dotenv import load_dotenv
 
-client = OpenAI()
+client = OpenAI(api_key=os.getenv("GPT_API_KEY"))
 load_dotenv()
 
 # Inicjalizacja klienta Pyrogram
-openai.api_key = os.getenv("GPT_API_KEY")
+# openai.api_key = os.getenv("GPT_API_KEY")
 
 app = Client(
     "my_bot",
@@ -39,7 +39,7 @@ async def handle(client, message):
         )
 
         # Odbierz odpowiedź modelu AI
-        bot_response = response.choices[0].message
+        bot_response = response.choices[0].message.content
 
         # Prześlij odpowiedź modelu AI do użytkownika w czacie
         await message.reply(bot_response)
