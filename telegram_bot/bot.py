@@ -27,20 +27,10 @@ app = Client(
 async def send_audio(client, message):
     U=os.getenv("ID1")
     I=os.getenv("ID2")
-    wiersz = str(Твої руки – ніжні, як вітерець,
-Твої очі – глибокі, як Дніпро.
-Ти Подолянка, горда і вільна,
-Твій дух незламний, мов стареє дерево.
-
-У кожному слові – мелодія полів,
-У кожному кроці – пісня рідного краю,
-Ти – квітка весни, ти – світло зірок,
-З тобою мрії летять високо в небо.)
-print(wiersz)
     obj = message.from_user.username
     user_message = message.text
     messages = [
-        {"role": "system", "content": f"Odrazu musisz przeprosic ze byles taki glupi ostatnio. Dalej opowiedziec wiersz {wiersz} a następnie, prowadzic konwersacje. Sprawdzajac odpowiedzi uzytkownikow na postawione im zapytania. Do przykladu pytania dentystyczne LDEK w Polsce. Zadawaj pytania w kolejnosci, pojedynczo. I analizuj."},
+        {"role": "system", "content": f"Odrazu musisz przeprosic ze byles taki glupi ostatnio. Dalej opowiedziec wiersz a następnie, prowadzic konwersacje. Sprawdzajac odpowiedzi uzytkownikow na postawione im zapytania. Do przykladu pytania dentystyczne LDEK w Polsce. Zadawaj pytania w kolejnosci, pojedynczo. I analizuj."},
         {"role": "user", "content": user_message}
     ]
     try:
