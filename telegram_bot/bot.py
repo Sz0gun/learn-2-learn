@@ -1,5 +1,5 @@
 import os
-import openai
+# import openai
 
 from openai import OpenAI, ChatCompletion
 from pyrogram import Client, filters
@@ -7,7 +7,7 @@ from pyrogram import Client, filters
 # Ładowanie zmiennych środowiskowych z pliku .env
 from dotenv import load_dotenv
 
-client = OpenAI(api_key=os.getenv("GPT_API_KEY"))
+ai_client = OpenAI(api_key=os.getenv("GPT_API_KEY"))
 load_dotenv()
 
 # Inicjalizacja klienta Pyrogram
@@ -33,7 +33,7 @@ async def handle(client, message):
 
     try:
         # Wyślij wiadomość do modelu OpenAI i odbierz odpowiedź
-        response = client.chat.completions.create(
+        response = ai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages
         )
