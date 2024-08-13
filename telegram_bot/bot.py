@@ -23,18 +23,41 @@ app = Client(
     bot_token=os.getenv("TELEGRAM_BOT_TOKEN")
 )
 
-@app.on_message(filters.command(["start", "help"]) & (filters.channel | filters.private))
+@app.on_message(filters.command(["start", "help"]))
 async def send_audio(client, message):
     U=os.getenv("ID1")
     I=os.getenv("ID2")
+    wiersz = 
+"""
+Твої руки – ніжні, як вітерець,
+Твої очі – глибокі, як Дніпро.
+Ти Подолянка, горда і вільна,
+Твій дух незламний, мов стареє дерево.
+
+У кожному слові – мелодія полів,
+У кожному кроці – пісня рідного краю,
+Ти – квітка весни, ти – світло зірок,
+З тобою мрії летять високо в небо.
+"""
     obj = message.from_user.username
-    print(message)
-    if obj == U :
+    user_message = message.text
+    messages = [
+        {"role": "system", "content": f"Odrazu musisz przeprosic ze byles taki glupi ostatnio. Dalej opowiedziec wiersz {wiersz} a następnie, prowadzic konwersacje. Sprawdzajac odpowiedzi uzytkownikow na postawione im zapytania. Do przykladu pytania dentystyczne LDEK w Polsce. Zadawaj pytania w kolejnosci, pojedynczo. I analizuj."},
+        {"role": "user", "content": user_message}
+    ]
+    try:
+        response = ai_client.chat.completions.create(
+                                                        model="gpt-4o-mini",
+                                                        messages=messages
+                                                    )
+        obj = message.from_user.username
+        obj == U :
         mp3 == os.path.join(BASE_DIR, 'staticfiles', 'focusing.mp3')
-        await message.reply_audio(audio=mp3, caption="Hej, piękna")
-    else:
-        if obj == I :
-            print("Something")
+        await message.reply(bot_response) and message.reply_audio(audio=mp3, caption="Hej, piękna")
+    except Exception as e:
+        print(f"Something WRONG {e}")
+        await message.reply("Sorry, I couldn't process your request.")
+
 
 
 
