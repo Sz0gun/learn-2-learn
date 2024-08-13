@@ -29,8 +29,9 @@ async def send_audio(client, message):
     I=os.getenv("ID2")
     user_message = message.text
     messages = [
-        {"role": "system", "content": f"Odrazu musisz przeprosic ze byles taki glupi ostatnio. Dalej opowiedziec wiersz a następnie, prowadzic konwersacje. Sprawdzajac odpowiedzi uzytkownikow na postawione im zapytania. Do przykladu pytania dentystyczne LDEK w Polsce. Zadawaj pytania w kolejnosci, pojedynczo. I analizuj."},
-        {"role": "user", "content": user_message}
+        {"role": "system", "content": f"Odrazu musisz przeprosic ze byles taki glupi ostatnio."},
+        {"role": "user", "content": user_message},
+        {"role": "assistant", "content": "Odrazu poprosze opowiedziec wiersz a następnie, prowadzic konwersacje. Sprawdzajac odpowiedzi uzytkownikow na postawione im zapytania. Do przykladu pytania dentystyczne LDEK w Polsce. Zadawaj pytania w kolejnosci, pojedynczo. I analizuj."},
     ]
     try:
         bot_response = ai_client.chat.completions.create(
@@ -39,8 +40,7 @@ async def send_audio(client, message):
                                                      )
         bee = message.from_user.username
         if bee == U or bee == I:
-            mp3 == os.path.join(BASE_DIR, 'staticfiles', 'focusing.mp3')
-            await message.reply(bot_response) and message.reply_audio(audio=mp3, caption="Hej, piękna")
+            await message.reply(bot_response)
     except Exception as e:
 
         await message.reply("Sorry, I couldn't process your request.")
