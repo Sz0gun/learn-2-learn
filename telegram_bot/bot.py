@@ -6,9 +6,12 @@ from pyrogram import Client, filters
 
 # Ładowanie zmiennych środowiskowych z pliku .env
 from dotenv import load_dotenv
-
-ai_client = OpenAI(api_key=os.getenv("GPT_API_KEY"))
 load_dotenv()
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+ai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 
 # Inicjalizacja klienta Pyrogram
 # openai.api_key = os.getenv("GPT_API_KEY")
@@ -19,6 +22,15 @@ app = Client(
     api_hash=os.getenv("TELEGRAM_API_HASH"),
     bot_token=os.getenv("TELEGRAM_BOT_TOKEN")
 )
+
+@app.on_message(filters.command(["start", "help"]) & (filters.channel | filters.private))
+async def send_audio(client, message):
+    user = message.from_user.username
+    if user=='alegbee' or user=='b3av3r':
+        mp3 = os.path.join(BASE_DIR, 'staticfiles', 'focusing.mp3')
+        await message.reply_audio(audio=mp3, caption="Hej, piękna")
+
+
 
 @app.on_message(filters.text)
 async def handle(client, message):
@@ -32,18 +44,16 @@ async def handle(client, message):
     ]
 
     try:
-        # Wyślij wiadomość do modelu OpenAI i odbierz odpowiedź
         response = ai_client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=messages
-        )
+                                                        model="gpt-4o-mini",
+                                                        messages=messages
+                                                    )
 
         # Odbierz odpowiedź modelu AI
         bot_response = response.choices[0].message.content
 
         # Prześlij odpowiedź modelu AI do użytkownika w czacie
         await message.reply(bot_response)
-
     except Exception as e:
         # W razie błędu, przekaż informację do użytkownika
         await message.reply("Sorry, I couldn't process your request.")
