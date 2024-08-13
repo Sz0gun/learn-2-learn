@@ -39,7 +39,7 @@ async def handle(client, message):
         )
 
         # Odbierz odpowiedź modelu AI
-        bot_response = response.choices[0].message['content'].strip()
+        bot_response = response.choices[0].message
 
         # Prześlij odpowiedź modelu AI do użytkownika w czacie
         await message.reply(bot_response)
