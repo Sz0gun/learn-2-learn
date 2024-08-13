@@ -1,5 +1,5 @@
 import os
-from openai import OpenAI
+from openai import OpenAI, ChatCompletion
 
 from pyrogram import Client, filters
 
@@ -33,7 +33,7 @@ async def handle(client, message):
     try:
         # Wyślij wiadomość do modelu OpenAI i odbierz odpowiedź
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=messages
         )
 

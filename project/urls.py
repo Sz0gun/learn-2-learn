@@ -15,10 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from telegram_bot.views import my_page_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('page/', my_page_view),
     path('', include('telegram_bot.urls')),  # Upewnij się, że telegram_bot.urls jest dołączony
 ]
