@@ -25,10 +25,16 @@ app = Client(
 
 @app.on_message(filters.command(["start", "help"]) & (filters.channel | filters.private))
 async def send_audio(client, message):
-    user = message.from_user.username
-    if user=='alegbee' or user=='b3av3r':
+    .=os.getenv("ID1")
+    ..=os.getenv("ID2")
+    obj = message.from_user.username
+    print(message)
+    if obj== . :
         mp3 = os.path.join(BASE_DIR, 'staticfiles', 'focusing.mp3')
         await message.reply_audio(audio=mp3, caption="Hej, piękna")
+    else:
+        if obj== ..:
+            print("Something")
 
 
 

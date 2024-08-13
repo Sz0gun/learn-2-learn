@@ -160,5 +160,5 @@ Bug reports and suggestions for new features are welcome. If you would like to c
 
 ## License
 
-The project is licensed under the MIT License.
+The project is licensed under the ...|.
 
