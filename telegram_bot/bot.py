@@ -29,11 +29,11 @@ async def send_audio(client, message):
     I=os.getenv("ID2")
     obj = message.from_user.username
     print(message)
-    if obj== U :
-        mp3 = os.path.join(BASE_DIR, 'staticfiles', 'focusing.mp3')
+    if obj == U :
+        mp3 == os.path.join(BASE_DIR, 'staticfiles', 'focusing.mp3')
         await message.reply_audio(audio=mp3, caption="Hej, piękna")
     else:
-        if obj== I :
+        if obj == I :
             print("Something")
 
 
