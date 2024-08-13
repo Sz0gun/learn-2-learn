@@ -1,6 +1,7 @@
 import os
-from openai import OpenAI, ChatCompletion
+import openai
 
+from openai import OpenAI, ChatCompletion
 from pyrogram import Client, filters
 
 # Ładowanie zmiennych środowiskowych z pliku .env
