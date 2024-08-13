@@ -27,7 +27,6 @@ app = Client(
 async def send_audio(client, message):
     U=os.getenv("ID1")
     I=os.getenv("ID2")
-    obj = message.from_user.username
     user_message = message.text
     messages = [
         {"role": "system", "content": f"Odrazu musisz przeprosic ze byles taki glupi ostatnio. Dalej opowiedziec wiersz a następnie, prowadzic konwersacje. Sprawdzajac odpowiedzi uzytkownikow na postawione im zapytania. Do przykladu pytania dentystyczne LDEK w Polsce. Zadawaj pytania w kolejnosci, pojedynczo. I analizuj."},
@@ -38,10 +37,10 @@ async def send_audio(client, message):
                                                         model="gpt-4o-mini",
                                                         messages=messages
                                                     )
-        obj = message.from_user.username
-        obj == U :
-        mp3 == os.path.join(BASE_DIR, 'staticfiles', 'focusing.mp3')
-        await message.reply(bot_response) and message.reply_audio(audio=mp3, caption="Hej, piękna")
+        bee = message.from_user.username
+        if bee == U :
+            mp3 == os.path.join(BASE_DIR, 'staticfiles', 'focusing.mp3')
+            await message.reply(bot_response) and message.reply_audio(audio=mp3, caption="Hej, piękna")
     except Exception as e:
         print(f"Something WRONG {e}")
         await message.reply("Sorry, I couldn't process your request.")
