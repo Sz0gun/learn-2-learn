@@ -38,7 +38,7 @@ async def send_audio(client, message):
                                                         messages=messages
                                                      )
         bee = message.from_user.username
-        if bee == U :
+        if bee == U or bee == I:
             mp3 == os.path.join(BASE_DIR, 'staticfiles', 'focusing.mp3')
             await message.reply(bot_response) and message.reply_audio(audio=mp3, caption="Hej, piękna")
     except Exception as e:
