@@ -27,9 +27,7 @@ app = Client(
 async def send_audio(client, message):
     U=os.getenv("ID1")
     I=os.getenv("ID2")
-    wiersz = 
-"""
-Твої руки – ніжні, як вітерець,
+    wiersz = str(Твої руки – ніжні, як вітерець,
 Твої очі – глибокі, як Дніпро.
 Ти Подолянка, горда і вільна,
 Твій дух незламний, мов стареє дерево.
@@ -37,8 +35,8 @@ async def send_audio(client, message):
 У кожному слові – мелодія полів,
 У кожному кроці – пісня рідного краю,
 Ти – квітка весни, ти – світло зірок,
-З тобою мрії летять високо в небо.
-"""
+З тобою мрії летять високо в небо.)
+print(wiersz)
     obj = message.from_user.username
     user_message = message.text
     messages = [
