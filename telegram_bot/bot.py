@@ -25,7 +25,7 @@ app = Client(
 
 @app.on_message(filters.command(["start", "help"]) & (filters.channel | filters.private))
 async def send_audio(client, message):
-    .=os.getenv("ID1")
+    ...=os.getenv("ID1")
     ..=os.getenv("ID2")
     obj = message.from_user.username
     print(message)
