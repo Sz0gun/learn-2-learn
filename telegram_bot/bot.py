@@ -33,17 +33,18 @@ async def send_audio(client, message):
         {"role": "user", "content": user_message}
     ]
     try:
-        response = ai_client.chat.completions.create(
+        bot_response = ai_client.chat.completions.create(
                                                         model="gpt-4o-mini",
                                                         messages=messages
-                                                    )
+                                                     )
         bee = message.from_user.username
         if bee == U :
             mp3 == os.path.join(BASE_DIR, 'staticfiles', 'focusing.mp3')
             await message.reply(bot_response) and message.reply_audio(audio=mp3, caption="Hej, piękna")
     except Exception as e:
-        print(f"Something WRONG {e}")
+
         await message.reply("Sorry, I couldn't process your request.")
+        print(f"Something WRONG {e}")
 
 
 
