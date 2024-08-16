@@ -68,7 +68,7 @@ class AIQuizBot:
             if chat_id in self.conversation_history:
                 full_conversation = self.full_conversation.get(chat_id, [])
                 full_conversation.append(self.conversation_history[chat_id])
-                self full_conversation = full_conversation
+                self.full_conversation = full_conversation
                 del self.conversation_history[chat_id]
                 await self.send_question(chat_id)
         else:
