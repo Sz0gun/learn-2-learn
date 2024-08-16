@@ -66,7 +66,7 @@ class AIQuizBot:
         if message == 'q':
             if chat_id in self.conversation_history:
                 del self.conversation_history[chat_id]
-            await self.send_question(chat_id)
+                await self.send_question(chat_id)
         else:
             await self.analyze_callback(chat_id, message)
         # del self.current_question[chat_id]  # Reset for the next question
