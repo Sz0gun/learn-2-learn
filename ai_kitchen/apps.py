@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class AccountConfig(AppConfig):
+class AiKitchenConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'api'
+    name = 'ai_kitchen'

@@ -13,6 +13,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+
 # Konfiguracja Telegram Bota
 TELEGRAM_API_ID = os.environ.get('TELEGRAM_API_ID')
 TELEGRAM_API_HASH = os.environ.get('TELEGRAM_API_HASH')
@@ -23,6 +25,9 @@ if not all([TELEGRAM_API_ID, TELEGRAM_API_HASH, TELEGRAM_BOT_TOKEN]):
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, '..'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.x/howto/deployment/checklist/
@@ -46,8 +51,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api',
     'telegram_bot',
+    'ai_kitchen',
 ]
 
 MIDDLEWARE = [
@@ -139,6 +144,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Add the staticfiles directory to STATICFILES_DIRS
+STATICFILES_DIRS = []
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
