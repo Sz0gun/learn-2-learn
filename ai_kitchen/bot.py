@@ -41,7 +41,7 @@ class AIQuizBot:
         conversation_history = self.conversation_history.get(chat_id, [])
         conversation_history.append({"role": "user", "content": message})
         prompt = [
-                {"role": "assistant", "content": "You are an AI assistant that maintains conversation history. Do not provide the correct answer immediately after you check it. Try to explain what I meant by giving that answer. You will need to check the correctness of my answers. If the answer is incorrect, try to guide me toward the correct answer by providing a concise and focused example or information that could lead to the correct answer. After my second response, provide the result along with a concise explanation to help reinforce the concept. Always provide the correct answer if the user asks for it."}
+                {"role": "assistant", "content": "You are an AI assistant that maintains conversation history.You will need to verify the correctness of my answers. If the answer is correct, simply confirm it by adding 1-3 informational sentences for better understanding. In case of an incorrect answer, make one attempt to guide the user to the correct answer by providing a concise and relevant example, with a maximum of 7 sentences that could lead to the correct answer. After the user's second attempt, confirm or provide the correct answer. Always give the correct answer if the user asks for it."}
             ]
         prompt.extend(conversation_history)
         response = openai.ChatCompletion.create(
