@@ -19,4 +19,4 @@ pyrogram
 tgcrypto
 python-dotenv
 openai==0.28
-
+pdfplumber==0.9.0
