@@ -24,6 +24,7 @@ class AIQuizBot:
         self.question_list = question_list
         self.current_question = {}
         self.conversation_history = {}
+        self.full_conversation = {}
 
     async def send_question(self, chat_id):
         if self.question_list:
@@ -65,6 +66,9 @@ class AIQuizBot:
     async def handle_user_interaction(self, chat_id, message):
         if message == 'q':
             if chat_id in self.conversation_history:
+                full_conversation = self.full_conversation.get(chat_id, [])
+                full_conversation.append(self.conversation_history[chat_id])
+                self full_conversation = full_conversation
                 del self.conversation_history[chat_id]
                 await self.send_question(chat_id)
         else:
