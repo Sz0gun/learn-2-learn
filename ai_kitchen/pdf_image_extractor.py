@@ -8,13 +8,11 @@ import numpy as np
 from google.colab import drive
 
 import sys
-drive.mount('/content/drive')
 sys.path.append('/content/drive/MyDrive/models')
 from esrgan_model_colab import get_esrgan_model
 
 from pdf2image import convert_from_path
 
-drive.mount('/content/drive')
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
 
