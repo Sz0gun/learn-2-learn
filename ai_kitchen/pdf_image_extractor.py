@@ -8,6 +8,7 @@ import numpy as np
 from google.colab import drive
 
 import sys
+drive.mount('/content/drive')
 sys.path.append('/content/drive/MyDrive/models')
 from esrgan_model_colab import get_esrgan_model
 
