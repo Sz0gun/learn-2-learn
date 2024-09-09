@@ -2,17 +2,28 @@ import os
 import PyPDF2
 import re
 import torch
+import psutil
+import tempfile
+import time
+import torch
+import functools
 import io
 import cv2
 import gc
 import numpy as np
+import matplotlib.pyplot as plt
 import unicodedata
 import pytesseract
 import tempfile
 from PyPDF2 import PdfReader, PdfWriter
 from pdf2image import convert_from_path, convert_from_bytes
+from torchvision.transforms.functional import rgb_to_grayscale
 from PIL import Image, ImageEnhance, ImageFilter
+from realesrgan import RealESRGANer
+from memory_profiler import profile  # Profilowanie pamięci
+
 from torch import nn
+
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,69 +34,283 @@ OUTPUT_FILE_PATH = os.path.join(BASE_DIR, 'staticfiles', 'SRM_1.wav')
 
 ESRGAN_MODEL_PATH = os.path.join(BASE_DIR, 'ml_models', 'ESRGAN_SRx4_official.pth')
 
-class PDFTextAndImageExtractor:
-    def __init__(self, pdf_stream, tesseract_lang='pol', model_path=ESRGAN_MODEL_PATH):
-        self.pdf_stream = pdf_stream.read()
+
+
+
+class ResidualDenseBlock(nn.Module):
+    def __init__(self, num_feat=64, num_grow_ch=32):
+        super(ResidualDenseBlock, self).__init__()
+        self.conv1 = nn.Conv2d(num_feat, num_grow_ch, 3, 1, 1)
+        self.conv2 = nn.Conv2d(num_feat + num_grow_ch, num_grow_ch, 3, 1, 1)
+        self.conv3 = nn.Conv2d(num_feat + 2 * num_grow_ch, num_grow_ch, 3, 1, 1)
+        self.conv4 = nn.Conv2d(num_feat + 3 * num_grow_ch, num_grow_ch, 3, 1, 1)
+        self.conv5 = nn.Conv2d(num_feat + 4 * num_grow_ch, num_feat, 3, 1, 1)
+        self.lrelu = nn.LeakyReLU(negative_slope=0.2, inplace=True)
+
+    def forward(self, x):
+        x1 = self.lrelu(self.conv1(x))
+        x2 = self.lrelu(self.conv2(torch.cat((x, x1), 1)))
+        x3 = self.lrelu(self.conv3(torch.cat((x, x1, x2), 1)))
+        x4 = self.lrelu(self.conv4(torch.cat((x, x1, x2, x3), 1)))
+        x5 = self.conv5(torch.cat((x, x1, x2, x3, x4), 1))
+        return x5 * 0.2 + x
+
+
+class RRDB(nn.Module):
+    def __init__(self, num_feat, num_grow_ch=32):
+        super(RRDB, self).__init__()
+        self.rdb1 = ResidualDenseBlock(num_feat, num_grow_ch)
+        self.rdb2 = ResidualDenseBlock(num_feat, num_grow_ch)
+        self.rdb3 = ResidualDenseBlock(num_feat, num_grow_ch)
+
+    def forward(self, x):
+        out = self.rdb1(x)
+        out = self.rdb2(out)
+        out = self.rdb3(out)
+        return out * 0.2 + x
+
+
+class RRDBNet(nn.Module):
+    def __init__(self, num_in_ch, num_out_ch, num_feat, num_block, num_grow_ch=32, scale=4):
+        super(RRDBNet, self).__init__()
+        self.scale = scale
+        self.conv_first = nn.Conv2d(num_in_ch, num_feat, 3, 1, 1)
+        self.RRDB_trunk = nn.Sequential(*[RRDB(num_feat, num_grow_ch) for _ in range(num_block)])
+        self.trunk_conv = nn.Conv2d(num_feat, num_feat, 3, 1, 1)
+        self.upconv1 = nn.Conv2d(num_feat, num_feat, 3, 1, 1)
+        self.upconv2 = nn.Conv2d(num_feat, num_feat, 3, 1, 1)
+        self.conv_last = nn.Conv2d(num_feat, num_out_ch, 3, 1, 1)
+
+        self.lrelu = nn.LeakyReLU(negative_slope=0.2, inplace=True)
+
+    def forward(self, x):
+        feat = self.conv_first(x)
+        trunk = self.trunk_conv(self.RRDB_trunk(feat))
+        feat = feat + trunk
+
+        feat = self.lrelu(self.upconv1(torch.nn.functional.interpolate(feat, scale_factor=2, mode='nearest')))
+        feat = self.lrelu(self.upconv2(torch.nn.functional.interpolate(feat, scale_factor=2, mode='nearest')))
+        out = self.conv_last(feat)
+        return out
+
+
+def timing_decorator(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print(f"{func.__name__} took {end_time - start_time:.4f} seconds")
+        return result
+    return wrapper
+
+
+def print_memory_usage():
+    if torch.cuda.is_available():
+        print(f"CUDA Memory Usage: {torch.cuda.memory_allocated() / 1024 ** 2:.2f} MB")
+    else:
+        print("Memory usage check only works with CUDA")
+
+
+class PDFImageExtractor:
+    
+    def __init__(self, pdf_stream, tesseract_lang='eng', model_path=ESRGAN_MODEL_PATH):
+        print("Initializing PDFImageExtractor...")
+
+        if not isinstance(pdf_stream, io.BytesIO):
+            raise TypeError("PDF stream must be of type io.BytesIO")
+
+        try:
+            self.pdf_stream = pdf_stream.read()
+            print(f"PDF stream size: {len(self.pdf_stream)} bytes")
+        except Exception as e:
+            raise Exception(f"Error reading PDF stream: {e}")
+
         self.tesseract_lang = tesseract_lang
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model = self.load_esrgan_model(model_path)
+
+        if torch.cuda.is_available():
+            try:
+                self.device = torch.device('cuda')
+                print("Using CUDA GPU")
+            except RuntimeError as e:
+                print(f"Error with CUDA: {e}. Falling back to CPU.")
+                self.device = torch.device('cpu')
+        elif torch.backends.mps.is_available():
+            try:
+                self.device = torch.device('mps')
+                print("Using Apple MPS (Metal Performance Shaders)")
+            except RuntimeError as e:
+                print(f"Error with MPS: {e}. Falling back to CPU.")
+                self.device = torch.device('cpu')
+        else:
+            self.device = torch.device('cpu')
+            print("Using CPU")
+
+        self.model_path = model_path
+        self.model = self.load_esrgan_model(self.model_path)
+        if self.model is None:
+            print("Failed to load the model.")
+        else:
+            print("Model loaded successfully.")
+        print_memory_usage()
+
+        self.stop_processing = False
+        print("Initialization complete.")
+        print_memory_usage()
 
     def load_esrgan_model(self, model_path):
-        """ Load the ESRGAN model """
-        model = torch.load(model_path, map_location=self.device)
-        model.eval()
-        return model
+        try:
+            if not os.path.exists(model_path):
+                print(f"Model file not found: {model_path}. Please check the path.")
+                return None
 
-    def preprocess_image(self, image):
-        """ Convert image to tensor and normalize """
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image = image.astype(np.float32) / 255.0
-        image = torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0).to(self.device)
-        return image
+            print(f"Loading model from: {model_path}")
+            loadnet = torch.load(model_path, map_location=torch.device('cpu'))
+            if 'params' in loadnet:
+                model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
+                model.load_state_dict(loadnet['params'], strict=False)
+                model.half()  # For faster computations
+                model = model.to(self.device)
+                print("Model załadowany pomyślnie!")
+                return model
+            else:
+                print("Klucz 'params' nie został znaleziony w modelu.")
+                return None
+        except Exception as e:
+            print(f"Error loading model: {e}")
+            return None
 
-    def postprocess_image(self, tensor):
-        """ Convert tensor back to image format """
-        tensor = tensor.swueeze(0).cpu().permute(1, 2, 0).numpy()
-        tensor = np.clip(tensor * 255.0, 0, 255).astype(np.uint8)
-        tensor = cv2.cvtColor(tensor, cv2.COLOR_RGB2BGR)
-        return tensor
-    
+    def display_image(self, image):
+        try:
+            cv2.imshow("Processed Image", image)
+            key = cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+            if key == ord('n'):
+                self.stop_processing = True
+                print("Processing stopped by user.")
+        except Exception as e:
+            print(f"Error displaying image: {e}")
+
+    @timing_decorator
     def apply_super_resolution(self, image):
-        """ Apply ESRGAN Super Resolution to an image """
-        input_tensor = self.preprocess_image(image)
-        with torch.no_grad():
-            output_tensor = self.model(input_tensor)
-        enhanced_image = self.postprocess_image(output_tensor)
-        return enhanced_image
+        try:
+            if self.model is None:
+                print("Error: No model loaded. Skipping super resolution.")
+                return image
 
-    def extract_images(self):
-        """
-        Extract images from the PDF file as single pages.
-        """
-        pdf_reader = PdfReader(io.BytesIO(self.pdf_stream))
+            print("Applying super resolution...")
+            self.model = self.model.to(self.device)
+            image_tensor = torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0).half().to(self.device)
 
-        # > for page_number in range(len(pdf_reader.pages)):
-        for page_number in range(len(pdf_reader.pages[110:120])):
-            page = pdf_reader.pages[page_number]
-            output_stream = io.BytesIO()
-            pdf_writer = PdfWriter()
-            pdf_writer.add_page(page)
-            pdf_writer.write(output_stream)
-            page_bytes = output_stream.getvalue()
+            with torch.no_grad():
+                enhanced_image_tensor = self.model(image_tensor).squeeze(0).permute(1, 2, 0).cpu().numpy()
 
-            try:
+            enhanced_image = (enhanced_image_tensor * 255).astype(np.uint8)
+
+            del image_tensor, enhanced_image_tensor
+            gc.collect()
+            print_memory_usage()
+
+            self.model = self.model.to('cpu')
+            print("Super resolution applied successfully.")
+            return enhanced_image
+        except Exception as e:
+            print(f"Error applying super resolution: {e}")
+            return image
+
+    @timing_decorator
+    def process_pdf(self, start_page=0, end_page=None):
+        try:
+            pdf_reader = PdfReader(io.BytesIO(self.pdf_stream))
+            total_pages = len(pdf_reader.pages)
+
+            if end_page is None or end_page > total_pages:
+                end_page = total_pages
+
+            if start_page >= end_page:
+                raise ValueError("Start page must be less than end page.")
+
+            print(f"Processing PDF from page {start_page} to {end_page} (total: {end_page - start_page})")
+
+            for batch_start in range(start_page, end_page):
+                print(f"Processing page {batch_start}...")
+                for image_cv in self.extract_images(batch_start, batch_start + 1):
+                    enhanced_image = self.process_patches(image_cv, patch_size=32)
+                    self.display_image(enhanced_image)
+                    if self.stop_processing:
+                        break
+                gc.collect()
+                print_memory_usage()
+                if self.stop_processing:
+                    break
+        except Exception as e:
+            print(f"Error processing PDF: {e}")
+            raise
+
+    def extract_images(self, start_page=0, end_page=None):
+        try:
+            print("Extracting images from PDF...")
+            pdf_reader = PdfReader(io.BytesIO(self.pdf_stream))
+            total_pages = len(pdf_reader.pages)
+
+            for page_number in range(start_page, min(end_page, total_pages)):
+                print(f"Processing page {page_number + 1}...")
+                page = pdf_reader.pages[page_number]
+                with io.BytesIO() as output_stream:
+                    pdf_writer = PdfWriter()
+                    pdf_writer.add_page(page)
+                    pdf_writer.write(output_stream)
+                    page_bytes = output_stream.getvalue()
+
                 images = convert_from_bytes(page_bytes)
                 for image in images:
-                    yield image
-                    image.close()
-                    del images
+                    open_cv_image = np.array(image)
+                    open_cv_image = cv2.cvtColor(open_cv_image, cv2.COLOR_RGB2BGR)
+
+                    enhanced_image = self.apply_super_resolution(open_cv_image)
+                    yield enhanced_image
+                    print_memory_usage()
+                    if self.stop_processing:
+                        return
+        except Exception as e:
+            print(f"Error extracting images: {e}")
+            raise
+
+    @timing_decorator
+    def process_patches(self, image, patch_size=128):
+        try:
+            if self.model is None:
+                print("Error: No model loaded. Skipping patch processing.")
+                return image
+
+            print(f"Processing image in patches (size: {patch_size}x{patch_size})...")
+            h, w, _ = image.shape
+            enhanced_image = np.zeros_like(image)
+
+            for i in range(0, h, patch_size):
+                for j in range(0, w, patch_size):
+                    patch = image[i:i + patch_size, j:j + patch_size]
+                    patch_tensor = torch.from_numpy(patch).permute(2, 0, 1).unsqueeze(0).half().to(self.device)
+
+                    with torch.no_grad():
+                        enhanced_patch_tensor = self.model(patch_tensor).squeeze(0).permute(1, 2, 0).cpu().numpy()
+
+                    enhanced_image[i:i + patch_size, j:j + patch_size] = (enhanced_patch_tensor * 255).astype(np.uint8)
+
+                    del patch_tensor, enhanced_patch_tensor
+                    torch.cuda.empty_cache()
                     gc.collect()
-                output_stream.close()
+                    print_memory_usage()
+                    if self.stop_processing:
+                        break
 
-            except Exception as e:
-                print (f"Error extracting images from page {page_number}: {e}")
+            print("Patches processed successfully.")
+            return enhanced_image
+        except Exception as e:
+            print(f"Error processing patches: {e}")
+            return image
 
-    def smooth_image(self, image):
+    # def smooth_image(self, image):
         """
         Applies smoothing to the image using Gaussian Blur and Median Blur.
         This helps in reducing noise and preparing the image for noise removal.
@@ -95,7 +320,7 @@ class PDFTextAndImageExtractor:
         smoothed_image = cv2.medianBlur(gaussian_blur, 1)
         return smoothed_image
 
-    def enhance_image(self, image):
+    # def enhance_image(self, image):
         """
         Enhances the image quality by reducing noise and improving contrast and sharpness.
         """
@@ -127,7 +352,7 @@ class PDFTextAndImageExtractor:
 
         return enhanced_image
 
-    def detect_and_expand_contours(self, image, page_number, margin_step=50, max_margin=500, initial_margin=150):
+    # def detect_and_expand_contours(self, image, page_number, margin_step=50, max_margin=500, initial_margin=150):
         """
         Detects contours in the image, checks them for text,
         and expands the area around contours if there is no text.
@@ -233,7 +458,7 @@ class PDFTextAndImageExtractor:
                     # Increase the margin for the next iteration
                     current_margin += margin_step
 
-    def remove_text_and_get_image_coords(self, image, page_number):
+    # def remove_text_and_get_image_coords(self, image, page_number):
         """
         Drtects text area on the page, removes them, and extracts the coordinates
         of potential image areas
@@ -281,38 +506,32 @@ class PDFTextAndImageExtractor:
 
         return image_coords
 
-
-    def process_pdf(self):
-        """
-        Process all PDF pages: extracts images, analyzes contours, and saves image regions.
-        """
-        for page_number, image_pil in enumerate(self.extract_images()):
-            # Convert the PIL image to OpenCV format (Numpy array)
-            image_cv = np.array(image_pil)
-            image_cv = cv2.cvtColor(image_cv, cv2.COLOR_RGB2BGR)
-
-            # image_cv_gray = cv2.cvtColor(image_cv, cv2.COLOR_BGR2GRAY)
-
-
- 
-            # Detect and expand contours in each page
-            # self.remove_text_and_get_image_coords(image_cv, page_number)
-
-            enh_image = self.apply_super_resolution(image_cv)
-
-
-
-
-            # Display the cleaned page without artifacts
-            cv2.imshow(f"Page {page_number} - Cleaned Image", enh_image)
-
-            cv2.waitKey(0)  # Wait for a key press to close the window
-            cv2.destroyAllWindows()
+    # def check_model_file(self, model_path):
+        """ Sprawdza, czy plik modelu zawiera odpowiednie klucze """
+        try:
+            model_data = torch.load(model_path, map_location=torch.device('cpu'))
+            
+            # Sprawdzenie, czy załadowany obiekt to słownik
+            if isinstance(model_data, dict):
+                print(f"Klucze w modelu: {model_data.keys()}")
+                
+                # Sprawdzenie, czy model zawiera klucz 'params_ema'
+                if 'params_ema' in model_data:
+                    print("Model zawiera 'params_ema'. Jest to prawidłowy klucz wag modelu.")
+                    return True
+                else:
+                    print("Model nie zawiera klucza 'params_ema'.")
+                    return False
+            else:
+                print("Plik modelu nie jest słownikiem.")
+                return False
+        except Exception as e:
+            print(f"Błąd podczas ładowania pliku modelu: {e}")
+            return False
 
 
-            # Memory cleanup
-            del image_cv
-            gc.collect()
+
+
 
     def extract_text(self):
         """
@@ -420,18 +639,14 @@ def extract_chapters(self, text):
 if __name__ == "__main__":
     # pdf_to_speech = PDFToSpeech()
     pdf_path = PDF_FILE_PATH
-    language = 'pol'
+    language = 'eng'
 
     # PDFTextAndImageExtractor
-    with open(pdf_path, 'rb') as f:
-        # pdf_stream = io.BytesIO(f.read())
-        extractor = PDFTextAndImageExtractor(f)
-        print('PDF opened')
-
-
-    for page_images in extractor.process_pdf():
-        print(f"Wydobyto {len(page_images)} obrazów na tej stronie.")
-
+    with open(pdf_path, 'rb') as pdf_stream:
+        content = pdf_stream.read()  # Odczytaj zawartość pliku
+        print(f"Read PDF content: {type(content)}, size: {len(content)} bytes")  # Dodajmy informację o rozmiarze i typie
+        extractor = PDFImageExtractor(io.BytesIO(content))  # Upewnij się, że strumień jest przekazany jako bytes
+        extractor.process_pdf(start_page=1, end_page=50)
 
 
     # text = extract_text_from_pdf(pdf_path)
