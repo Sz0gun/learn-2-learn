@@ -6,7 +6,7 @@ import concurrent.futures
 from PIL import Image
 import numpy as np
 from google.colab import drive
-from ESRGAN_Model_Colab import get_esrgan_model
+from esrgan_model_colab import get_esrgan_model
 from pdf2image import convert_from_path
 
 drive.mount('/content/drive')
