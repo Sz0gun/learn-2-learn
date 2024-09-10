@@ -1,4 +1,4 @@
-# Django dependendencies
+# Django dependencies
 Django==4.2.2
 djangorestframework==3.14.0
 gunicorn==20.1.0
@@ -15,8 +15,8 @@ poppler-utils
 pytesseract==0.3.13
 
 # PyTorch and vision
-torch==2.4.1
-torchvision==0.19.1
+torch==2.2
+torchvision==0.17
 
 # Flask dependencies
 Flask==2.0.1
@@ -30,9 +30,16 @@ whitenoise==6.7.0
 openai==0.28
 
 # TensorFlow with GPU support
-tensorflow-gpu==2.11.0
+tensorboard-data-server==0.7.0
+tensorflow==2.17.0
+tensorboard>=2.17,<2.18
 
 # Other
+poppler-utils
+realesrgan
+keras>=3.2.0
+protobuf==3.20.3
+google-auth-oauthlib>=0.7.0
 click==8.1.7
 numpy==1.24.3
 pytz==2024.1
