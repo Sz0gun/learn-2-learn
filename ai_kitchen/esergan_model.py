@@ -1,112 +1,130 @@
+"""
+DEPENDECIES
+!pip uninstall -y torch torchvision
+!pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
+!pip install git+https://github.com/xinntao/Real-ESRGAN.git
+!pip install basicsr==1.4.2
+!pip install facexlib gfpgan
+
+"""
+
 import torch
-import os
+import psutil
 from realesrgan import RealESRGANer
-import sys
-import io
-import zipfile
-import pickle
+from PIL import Image
+import numpy as np
+import time
+import os
+import matplotlib.pyplot as plt
 
+class RealESRGANProcessor:
+    def __init__(self, model_path, device='cuda', scale=4, dni_weight=0.8):
+        """Initialize the RealESRGANProcessor class"""
+        self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
+        print(f"Using device: {self.device}")
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # Monitor resources before model initialization
+        self.monitor_resources("Before model initialization")
 
-
-MODEL_FILE_PATH = os.path.join(BASE_DIR, 'staticfiles', 'real_esergan')
-
-
-# Custom unpickler to handle 'persistent_load'
-class CPU_Unpickler(pickle.Unpickler):
-    def persistent_load(self, pid):
-        if isinstance(pid, tuple) and pid[0] == 'storage':
-            storage_type = getattr(torch, pid[1].__name__)  # Get storage class from torch
-            
-            # Ensure the third element (size) is an integer
-            if isinstance(pid[2], str):  # Check if it is a string
-                size = int(pid[2])  # Convert to integer if necessary
-            else:
-                size = pid[2]  # Otherwise, keep it as is
-
-            storage = storage_type._new_shared(size)  # Create new shared storage
-            return storage
-        else:
-            print(f"Handling persistent load: {pid}")
-            return super().persistent_load(pid)
-
-
-
-def get_esrgan_model():
-    """Function to load, extract, and return the ESRGAN model."""
-
-    # Define the device (CPU or GPU)
-    if not torch.cuda.is_available():
-        model_device = 'cpu'
-        print("CPU is available. Using CPU for processing.")
-    else:
-        model_device = 'cuda'
-        print("GPU is available. Using GPU for processing.")
-
-    # List all files in the folder
-    try:
-        files_in_folder = os.listdir(MODEL_FILE_PATH)
-        print("Files in the folder:", files_in_folder)
-    except FileNotFoundError as e:
-        print(f"Extracted model folder not found: {e}")
-        return None, None
-
-    # Initialize variables to store file paths
-    pth_file = None
-    pkl_file = None
-
-    # Find the .pth and .pkl files in the folder
-    for file_name in files_in_folder:
-        if file_name.endswith('.pth'):
-            pth_file = os.path.join(MODEL_FILE_PATH, file_name)
-            print(f"Found model file (pth): {pth_file}")
-        elif file_name.endswith('.pkl'):
-            pkl_file = os.path.join(MODEL_FILE_PATH, file_name)
-            print(f"Found pickle file (pkl): {pkl_file}")
-
-    try:
-        model_file_path = pkl_file if pkl_file else pth_file
-
-        if pkl_file:  # Use the custom unpickler if it's a pickle file
-            with open(model_file_path, 'rb') as f:
-                loadnet = CPU_Unpickler(f).load()
-        else:
-            loadnet = torch.load(model_file_path, map_location=torch.device(model_device))
-
-        print(f"Successfully loaded model from: {model_file_path}")
-    except Exception as e:
-        print(f"Error loading model: {e}")
-        return None, None
-
-    # Initialize and load the model weights
-    try:
-        model = RealESRGANer(
-            scale=4,  # Correct scale for the model
-            model_path=None,  # Not needed since weights are loaded manually
-            dni_weight=0.8,
-            device=model_device
+        # Load the RealESRGAN model
+        self.model = RealESRGANer(
+            scale=scale, 
+            model_path=model_path, 
+            dni_weight=dni_weight, 
+            device=self.device
         )
-        print("ESERGANER")
-        # Load the state dictionary into the model
-        if 'params_ema' in loadnet:
-            model.load_state_dict(loadnet['params_ema'], strict=False)
-            print("Model state dict loaded successfully!")
-        else:
-            print("Key 'params_ema' not found in the loaded model.")
-            return None, None
+        self.model.load_weights()
+        self.model.to(self.device)
 
-        model.half()  # Use half precision if supported
-        model = model.to(model_device)
-        print("ESRGAN model loaded and ready!")
-        return model, model_device
+        # Monitor resources after model initialization
+        self.monitor_resources("After model initialization")
+        print("RealESRGAN model loaded and ready!")
 
-    except Exception as e:
-        print(f"Error initializing or loading the model: {e}")
-        return None, None
+    def monitor_resources(self, message):
+        """Function to monitor system resources"""
+        memory = psutil.virtual_memory()
+        print(f"=== Resource Monitoring ({message}) ===")
+        print(f"Total RAM: {memory.total / (1024 ** 3):.2f} GB")
+        print(f"Available RAM: {memory.available / (1024 ** 3):.2f} GB")
+        print(f"Used RAM: {memory.used / (1024 ** 3):.2f} GB")
+        print(f"Memory usage percentage: {memory.percent}%")
+        if torch.cuda.is_available():
+            print(f"GPU memory usage: {torch.cuda.memory_allocated() / (1024 ** 3):.2f} GB")
+            print(f"Available GPU memory: {torch.cuda.memory_reserved() / (1024 ** 3):.2f} GB")
 
-# Call the function to get the model
-get_result = get_esrgan_model()
-print(get_result)
+    def pre_process_image(self, image_path):
+        """Method for preprocessing the input image before inference"""
+        print("Preprocessing input image...")
+        self.monitor_resources("Before image preprocessing")
+        
+        image = Image.open(image_path).convert('RGB')
+        image = np.array(image)
+        
+        # Convert to tensor
+        image_tensor = torch.from_numpy(image).float() / 255.0
+        image_tensor = image_tensor.permute(2, 0, 1).unsqueeze(0)  # Change dimensions to (1, C, H, W)
+        image_tensor = image_tensor.to(self.device)
+
+        self.monitor_resources("After image preprocessing")
+        return image_tensor
+
+    def run_inference(self, image_tensor):
+        """Perform inference on the image using the model"""
+        print("Running model inference...")
+        self.monitor_resources("Before inference")
+        
+        start_time = time.time()
+        with torch.no_grad():
+            sr_image = self.model.enhance(image_tensor)
+        
+        end_time = time.time()
+        print(f"Inference completed in {end_time - start_time:.2f} seconds.")
+        self.monitor_resources("After inference")
+        
+        return sr_image
+
+    def post_process_image(self, sr_image):
+        """Return the processed image after inference"""
+        print("Post-processing the result image...")
+        self.monitor_resources("Before post-processing result image")
+
+        # Convert tensor to image
+        sr_image = sr_image.squeeze().permute(1, 2, 0).cpu().numpy() * 255.0
+        sr_image = sr_image.clip(0, 255).astype(np.uint8)
+        sr_image = Image.fromarray(sr_image)
+
+        self.monitor_resources("After post-processing the image")
+        return sr_image
+
+    def save_image(self, sr_image, output_path):
+        """Manually save the result image to disk"""
+        sr_image.save(output_path)
+        print(f"Image saved as: {output_path}")
+        self.monitor_resources("After saving the image")
+
+    def display_image(self, sr_image):
+        """Manually display the result image"""
+        plt.imshow(sr_image)
+        plt.axis('off')  # Turn off axes for clean display
+        plt.show()
+        print("Image has been displayed.")
+
+    def process_image(self, image_path):
+        """Complete pipeline: preprocess, run inference, and post-process image"""
+        print("Starting the complete image processing pipeline...")
+
+        # Step 1: Pre-process the image
+        image_tensor = self.pre_process_image(image_path)
+        
+        # Step 2: Run inference
+        sr_image = self.run_inference(image_tensor)
+
+        # Step 3: Post-process the image
+        processed_image = self.post_process_image(sr_image)
+
+        return processed_image
+
+
+
 
 
