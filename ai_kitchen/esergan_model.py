@@ -5,6 +5,7 @@ DEPENDECIES
 !pip install git+https://github.com/xinntao/Real-ESRGAN.git
 !pip install basicsr==1.4.2
 !pip install facexlib gfpgan
+!git clone https://github.com/Sz0gun/learn-2-learn.git
 
 """
 
