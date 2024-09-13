@@ -1,5 +1,31 @@
 ### Learn to Learn API - Telegram Bot API
 
+
+**Changes**
+
+# Ścieżka do pliku degradations.py
+file_path = '/home/beaver/miniconda3/envs/cpu_esergan/lib/python3.9/site-packages/basicsr/data/degradations.py'
+
+# Sprawdzenie, czy plik istnieje
+if os.path.exists(file_path):
+    # Odczytaj zawartość pliku
+    with open(file_path, 'r') as file:
+        content = file.read()
+    
+    # Zamień niepoprawny import
+    content = content.replace(
+        'from torchvision.transforms.functional_tensor import rgb_to_grayscale',
+        'from torchvision.transforms.functional import rgb_to_grayscale'
+    )
+    
+    # Zapisz zaktualizowany plik
+    with open(file_path, 'w') as file:
+        file.write(content)
+    
+    print(f"Plik {file_path} został zaktualizowany.")
+else:
+    print(f"Plik {file_path} nie istnieje.")
+
 **Project Overview**
 
 This project involves the development of a Telegram bot integrated with the GPT-4 AI model, managed using the Pyrogram framework. The bot is fully operational in both local and production environments on the Heroku platform. The core objective of this project is to facilitate AI-driven conversations using GPT-4 and to expand knowledge on AI model training and deployment. The project serves as a foundation for further advancements in AI model customization and application in real-world scenarios.
