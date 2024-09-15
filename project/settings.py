@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'telegram_bot',
     'ai_kitchen',
-    'app_utils',
 ]
 
 MIDDLEWARE = [
