@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'telegram_bot',
     'ai_kitchen',
+    'app_utils',
 ]
 
 MIDDLEWARE = [
@@ -98,12 +99,8 @@ else:
     # Jeśli DATABASE_URL nie jest ustawione, używaj lokalnej bazy danych PostgreSQL
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'beaver_local_db',
-            'USER': 'beaver_local',  # Nazwa użytkownika lokalnej bazy danych
-            'PASSWORD': 'beaver',  # Hasło użytkownika lokalnej bazy danych
-            'HOST': 'localhost',
-            'PORT': '5432',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 

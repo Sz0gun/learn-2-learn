@@ -18,5 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('telegram_bot.urls')),  # Upewnij się, że telegram_bot.urls jest dołączony
+    path('app_utils/', include('app_utils.urls')),
 ]
