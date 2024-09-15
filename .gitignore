@@ -1,5 +1,6 @@
 *.pyc
 __pycache__/
 .env
-*.sqlite3credentials/google_drive_credentials.json
+*.sqlite3
+credentials/google_drive_credentials.json
 credentials/

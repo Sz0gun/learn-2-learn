@@ -7,6 +7,8 @@ import pickle
 # Scoopes define the level of accesss the app has to Google Drive
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
+credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+
 def authenticate_drive():
     """
     Authenticate and return the Google Drive service object.
@@ -14,7 +16,6 @@ def authenticate_drive():
     """
     creds = None
     token_path = 'credentials/token.pickle'
-    credentials_path = 'credentials/google_drive_credentials.json'
 
     # Check if tocken.pickle exists to avoid re-authentication
     if os.path.exists(token_path):

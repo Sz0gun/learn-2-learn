@@ -5,6 +5,8 @@ DEPENDECIES
 !pip install git+https://github.com/xinntao/Real-ESRGAN.git
 !pip install basicsr==1.4.2
 !pip install facexlib gfpgan
+!pip install pdf2image
+!apt-get install poppler-utils
 !git clone https://github.com/Sz0gun/learn-2-learn.git
 
 """
