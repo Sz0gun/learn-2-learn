@@ -32,5 +32,6 @@ pytz==2024.1
 # Google Drive API libraries (for authentication)
 google-api-python-client==2.34.0
 google-auth==2.27.0
+requests-oauthlib<2
 google-auth-oauthlib==1.2.1
 google-auth-httplib2==0.1.0
