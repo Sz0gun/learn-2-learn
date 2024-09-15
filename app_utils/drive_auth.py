@@ -7,8 +7,6 @@ import pickle
 # Scoopes define the level of accesss the app has to Google Drive
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
-credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-
 def authenticate_drive():
     """
     Authenticate and return the Google Drive service object.
