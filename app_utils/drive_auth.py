@@ -4,14 +4,14 @@ from google.auth.transport.requests import Request
 import os
 import pickle
 
-# Scopes define the level of access the app has to Google Drive
+# Define the scope for Google Drive access
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 def authenticate_drive(credentials_path, token_path='token.pickle'):
     """
     Authenticate and return the Google Drive service object.
-    This function handles OAuth 2.0 authentication flow and manages credentials,
-    using the console flow for environments like Google Colab.
+    This function handles OAuth 2.0 authentication flow manually 
+    for environments like Google Colab.
     """
     creds = None
 
@@ -25,11 +25,19 @@ def authenticate_drive(credentials_path, token_path='token.pickle'):
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            # Run OAuth flow using the credentials_path
+            # Manual OAuth flow using InstalledAppFlow
             flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
 
-            # Use run_console instead of run_local_server for Colab
-            creds = flow.run_console()  # This will prompt you to copy-paste the authorization code
+            # Instead of run_local_server or run_console, we manually generate the URL
+            auth_url, _ = flow.authorization_url(prompt='consent')
+
+            print(f"Please go to this URL: {auth_url}")
+
+            # Ask the user to paste the authorization code
+            code = input("Enter the authorization code: ")
+
+            # Complete the flow with the code provided by the user
+            creds = flow.fetch_token(code=code)
 
         # Save the credentials for future use in token.pickle
         with open(token_path, 'wb') as token:
