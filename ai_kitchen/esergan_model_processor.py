@@ -28,7 +28,7 @@ logging.basicConfig(filenames='resource_monitor.log', level=logging.INFO)
 class RealESRGANProcessor:
     def __init__(self, model_path, device='cuda', scale=4, dni_weight=0.8):
         """Initialize the RealESRGANProcessor class"""
-        if not os.path.exist(model_path):
+        if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model file not found at: {model_path}")
         
         self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
