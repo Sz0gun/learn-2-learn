@@ -1,11 +1,43 @@
-services:
-  app:
-    build:
-      context: .
-    ports:
-      - "8000:8000"
-    volumes:
-      - .:/app
-    command: python manage.py runserver 0.0.0.0:8000
+name: Deploy Project via GitHub Actions
 
-volumes: {}
+on:
+  push:
+    branches:
+      - main  # Adjust if using a different branch for deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # Set to the Python version your project uses
+
+      # Step 3: Install dependencies with upgrade
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade -r requirements.txt
+
+      # Step 4: Set up Google Cloud credentials from GitHub Secrets
+      - name: Set up Google Cloud credentials
+        run: echo "${{ secrets.GCS_CREDENTIALS }}" > /tmp/gcs_key.json
+
+      # Step 5: Export the path to the credentials as an environment variable
+      - name: Set up Google Cloud environment variable
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcs_key.json
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcs_key.json
+
+      # Step 6: Run the main script or Django commands (example with Python or Django)
+      - name: Run the project
+        run: |
+          python main.py  # Replace with the actual command to start your project

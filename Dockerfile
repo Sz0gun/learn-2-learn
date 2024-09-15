@@ -25,6 +25,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of your application code into the container
 COPY . /app/
 
+# Set the path for Google Cloud credentials (optional)
+# This assumes the credentials will be passed as a GitHub Secret in GitHub Actions
+ARG GOOGLE_APPLICATION_CREDENTIALS=/app/gcs_key.json
+ENV GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+
 # Expose the application port (for web apps)
 EXPOSE 8000
 

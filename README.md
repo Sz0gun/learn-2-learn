@@ -1,99 +1,134 @@
-### Learn to Learn API - Telegram Bot API
+Oto zaktualizowana i poprawiona wersja pliku README, uwzględniająca, że jest to Twój pierwszy projekt do portfolio, który jest w fazie wczesnej implementacji:
 
+---
 
-**Changes**
-
-# Ścieżka do pliku degradations.py
-file_path = '/home/beaver/miniconda3/envs/cpu_esergan/lib/python3.9/site-packages/basicsr/data/degradations.py'
-
-# Sprawdzenie, czy plik istnieje
-if os.path.exists(file_path):
-    # Odczytaj zawartość pliku
-    with open(file_path, 'r') as file:
-        content = file.read()
-    
-    # Zamień niepoprawny import
-    content = content.replace(
-        'from torchvision.transforms.functional_tensor import rgb_to_grayscale',
-        'from torchvision.transforms.functional import rgb_to_grayscale'
-    )
-    
-    # Zapisz zaktualizowany plik
-    with open(file_path, 'w') as file:
-        file.write(content)
-    
-    print(f"Plik {file_path} został zaktualizowany.")
-else:
-    print(f"Plik {file_path} nie istnieje.")
+### Learn to Learn API - Telegram Bot
 
 **Project Overview**
 
-This project involves the development of a Telegram bot integrated with the GPT-4 AI model, managed using the Pyrogram framework. The bot is fully operational in both local and production environments on the Heroku platform. The core objective of this project is to facilitate AI-driven conversations using GPT-4 and to expand knowledge on AI model training and deployment. The project serves as a foundation for further advancements in AI model customization and application in real-world scenarios.
+This project is my first portfolio project, where I am developing a Telegram bot that processes PDF files. The bot extracts both text and images, and performs further processing on each. The main goals of this bot are to:
+- Convert extracted text into speech using a Text-to-Speech (TTS) engine.
+- Enhance the quality of extracted images using the Real-ESRGAN model.
+- Enable interaction with users through Telegram chat, where they can upload PDF files and receive the processed outputs.
 
-### Completed Features
+The bot will also leverage **OpenAI's GPT** for conversation management, allowing users to answer quiz questions and get feedback on their responses. This project is still in its early stages of implementation.
 
-- **User Communication via Telegram**: 
-  - The bot is actively engaging with users through Telegram, utilizing GPT-4 for response generation.
+### Key Features (Planned)
 
-- **Support for Various Communication Methods**:
-  - The bot supports communication via webhooks and long polling, ensuring flexibility in deployment scenarios.
+- **PDF Processing**:
+  - Extract text and images from PDF files for further processing.
 
-- **Secure Management**:
-  - All API keys and sensitive information are securely managed using environment variables and best practices in Django.
+- **Text-to-Speech (TTS)**:
+  - Convert extracted text from PDF files into speech, providing users with an audio output.
+
+- **Image Enhancement**:
+  - Improve the quality of extracted images using the Real-ESRGAN model for high-resolution output.
+
+- **User Interaction via Telegram**:
+  - Users will interact with the bot by sending PDF files through Telegram. The bot will process the files and return enhanced images and text-to-speech results.
+
+- **Conversation Context with OpenAI**:
+  - Use OpenAI's GPT model to maintain conversation context and allow users to answer quiz questions with feedback on their responses.
 
 ### Technical Stack & Setup
 
-- **Python 3.9+**: The project is built on Python 3.9 to leverage the latest features and libraries.
-- **Django Framework**: Used for structuring the backend, handling requests, and managing the bot's operations.
-- **Heroku**: The bot is deployed on Heroku, with configurations in place for seamless integration and continuous deployment.
-- **GPT-4 API**: The core AI model driving the bot's conversational capabilities.
+- **Python 3.9+**: Core language for API development.
+- **Django**: Framework for managing the server-side API and routing.
+- **Google Cloud Platform (GCP)**: For running GPU-intensive tasks such as image enhancement.
+- **Real-ESRGAN**: Model used for enhancing the quality of images.
+- **Text-to-Speech (TTS)**: Engine for converting text into speech.
+- **Pyrogram**: Telegram API library in Python for managing communication with users.
+- **OpenAI API**: Used for conversation management and quiz feedback.
 
-### Configuration Overview
-
-1. **Virtual Environment Setup**:
-   - The virtual environment is installed and activated to ensure an isolated development environment.
-   - All dependencies are managed through `requirements.txt`.
-
-2. **Django Configuration**:
-   - Django settings have been configured for both local and production environments.
-   - Environment variables are set in a `.env` file, ensuring secure and flexible configuration.
-
-3. **Heroku Deployment**:
-   - The bot is deployed on Heroku, with all necessary environment variables configured.
-   - The deployment is automated, ensuring that updates are pushed to the production environment smoothly.
-
-4. **GPT-4 Model Integration**:
-   - A working GPT-4 model is integrated into the bot, enabling advanced conversational AI capabilities.
-   - The model is hosted and accessed via secure API calls, providing real-time interaction within the Telegram bot.
-
-### Project Structure
+### Project Structure (Initial)
 
 ```plaintext
 learn-2-learn/
 │
-├── ai_kitchen/  # Workspace to test and train AI models
-│   ├── __init__.py
-│   └── ...      # Other related files and scripts
+├── ai_kitchen/                  # Folder for AI models
+│   ├── esrgan_model_processor.py # ESRGAN model for image enhancement
+│   ├── tools.py                  # Tools for text extraction from PDFs
+│   └── ...
 │
-├── telegram_bot/
-│   ├── bot.py   # Main bot script handling Telegram interactions
-│   ├── views.py # Django views handling webhooks and API interactions
-│   └── ...      # Other related files and scripts
+├── document_processing/         # New folder for handling PDF processing
+│   ├── pdf_image_extractor.py    # Handles image and text extraction from PDFs
+│   ├── tools.py                  # Additional tools for processing documents
+│   └── ...
 │
-├── manage.py    # Django management script
-├── requirements.txt
-└── .env         # Environment variables file
+├── project/                     # Django project folder
+│   ├── settings.py              # Django settings
+│   ├── urls.py                  # Django URL routing
+│   ├── wsgi.py                  # WSGI configuration
+│   └── ...
+│
+├── telegram_bot/                # Main logic for the Telegram bot
+│   ├── bot.py                   # Bot logic, including OpenAI integration
+│   └── ...
+├── Dockerfile                   # Docker configuration
+├── docker-compose.yml           # Docker Compose for local development
+├── requirements.txt             # Project dependencies
+├── .env                         # Environment variables for API keys, secrets (for local testing)
+├── gsc_key.json                 # GCP credentials (for local testing)
+└── README.md                    # Project documentation (this file)
 ```
+
+### Current Status
+
+- This project is still in the **early stages of development**. The focus is currently on:
+  - Extracting text and images from PDF files.
+  - Setting up basic bot communication through Telegram.
+  - Initial integration of **Real-ESRGAN** for image enhancement and **OpenAI** for conversation management.
+
+- **Planned Features**:
+  - Add text-to-speech functionality.
+  - Implement quiz questions using OpenAI.
+  - Improve the handling of images and PDFs for better performance.
+
+### Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/your-username/learn-2-learn.git
+   cd learn-2-learn
+   ```
+
+2. **Set up environment variables**:
+   - Create a `.env` file with the necessary API keys for Telegram, OpenAI, and Google Cloud Platform:
+     ```plaintext
+     TELEGRAM_API_ID=your_telegram_api_id
+     TELEGRAM_API_HASH=your_telegram_api_hash
+     TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+     OPENAI_API_KEY=your_openai_api_key
+     GOOGLE_APPLICATION_CREDENTIALS=/path/to/gsc_key.json
+     ```
+
+3. **Build and run the project with Docker**:
+   - For local development, you can use Docker:
+     ```bash
+     docker-compose up --build
+     ```
 
 ### Next Steps
 
-- **Enhance AI Model Capabilities**: 
-  - Further training and fine-tuning of the GPT-4 model to improve response quality and relevance.
-  
-- **Expand Features**:
-  - Add additional features such as multi-language support, user authentication, and advanced logging.
+1. **Development**:
+   - Continue developing the core features for text and image extraction from PDFs.
+   - Implement OpenAI integration to provide dynamic quiz questions and feedback.
+   - Work on integrating the Text-to-Speech feature.
 
-- **Continuous Integration/Continuous Deployment (CI/CD)**:
-  - Implement CI/CD pipelines to automate testing, building, and deployment processes.
+2. **Testing**:
+   - Add unit tests to verify the correctness of text and image extraction, as well as the bot’s interaction with users.
+   - Perform integration tests to ensure smooth communication between the bot, OpenAI, and Google Cloud services.
 
+3. **Refinements**:
+   - As the project progresses, focus on improving performance and adding asynchronous handling for large PDFs and images.
+   - Securely manage API keys and credentials, particularly for production environments.
 
+### Goals
+
+The main objective of this project is to build a **showcase for my portfolio**, demonstrating my skills in:
+- Developing Python-based applications.
+- Integrating external APIs (Telegram, OpenAI, Google Cloud).
+- Using Docker for containerized development.
+- Leveraging machine learning models such as **Real-ESRGAN** for image enhancement.
+
+This project will evolve as I continue learning and adding new features.
