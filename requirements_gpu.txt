@@ -10,7 +10,8 @@ facexlib
 gfpgan
 
 # PDF and image processing
-pdf2image
+pdf2image==1.17.0
+poppler-utils
 
 # Other libraries
 openai==0.28

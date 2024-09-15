@@ -13,7 +13,6 @@ DEPENDECIES
 
 from pdf2image import convert_from_path
 from PIL import Image
-from realesrgan import RealESRGANer
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
