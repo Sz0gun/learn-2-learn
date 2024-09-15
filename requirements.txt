@@ -1,22 +1,26 @@
 # PyTorch and Vision with CUDA 11.8 support
-torch==2.0.0+cu118
-torchvision==0.15.1+cu118
-torchaudio==2.0.0+cu118
+torch==2.0.1
+torchvision==0.15.2
+git+https://github.com/xinntao/Real-ESRGAN.git
+
 
 # Real-ESRGAN model and dependencies
-basicsr==1.4.2
+basicsr
 facexlib
 gfpgan
 
 # PDF and image processing
 pdf2image==1.17.0
 poppler-utils
+google-cloud-storage
 
 # Other libraries
 openai==0.28
 click==8.1.7
 numpy==1.26.0
 pytz==2024.1
+numpy
+opencv-python
 
 # Django dependencies (if needed in Colab)
 Django==4.2.2

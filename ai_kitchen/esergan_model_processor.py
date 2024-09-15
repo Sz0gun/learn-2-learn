@@ -1,7 +1,7 @@
 """
 DEPENDECIES
 !pip uninstall -y torch torchvision
-!pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
+!pip install torch==2.0.1 torchvision==0.15.2
 !pip install git+https://github.com/xinntao/Real-ESRGAN.git
 !pip install basicsr==1.4.2
 !pip install facexlib gfpgan
@@ -44,7 +44,6 @@ class RealESRGANProcessor:
                 dni_weight=dni_weight, 
                 device=self.device
             )
-            self.model.load_weights()
             self.model.to(self.device)
         except Exception as e:
             logging.error(f"Error loading model: {e}")
