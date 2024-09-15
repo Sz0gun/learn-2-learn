@@ -4,7 +4,7 @@ torchvision==0.15.1+cu118
 torchaudio==2.0.0+cu118
 
 # Real-ESRGAN model and dependencies
-git+https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth -P weights
+git+https://github.com/xinntao/Real-ESRGAN.git
 basicsr==1.4.2
 facexlib
 gfpgan
