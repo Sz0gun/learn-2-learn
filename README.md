@@ -32,12 +32,14 @@ The bot will also leverage **OpenAI's GPT** for conversation management, allowin
 
 ### Technical Stack & Setup
 
-- **Python 3.9+**: Core language for API development.
-- **Django**: Framework for managing the server-side API and routing.
-- **Google Cloud Platform (GCP)**: For running GPU-intensive tasks such as image enhancement.
-- **Real-ESRGAN**: Model used for enhancing the quality of images.
-- **Text-to-Speech (TTS)**: Engine for converting text into speech.
-- **Pyrogram**: Telegram API library in Python for managing communication with users.
+- **Python 3.9+**
+- **Django**
+- **Google Cloud Platform (GCP)**
+- **Real-ESRGAN**
+- **Text-to-Speech (TTS)**
+- **Pyrogram**: Pyrogram is a framework written from the ground up that acts as a fully-fledged Telegram client based on the MTProto API.
+                        https://docs.pyrogram.org/
+                        https://docs.pyrogram.org/topics/mtproto-vs-botapi.html
 - **OpenAI API**: Used for conversation management and quiz feedback.
 
 ### Project Structure (Initial)
@@ -45,32 +47,30 @@ The bot will also leverage **OpenAI's GPT** for conversation management, allowin
 ```plaintext
 learn-2-learn/
 │
-├── ai_kitchen/                  # Folder for AI models
+├── ai_kitchen/                  
 │   ├── esrgan_model_processor.py # ESRGAN model for image enhancement
 │   ├── tools.py                  # Tools for text extraction from PDFs
 │   └── ...
 │
-├── document_processing/         # New folder for handling PDF processing
+├── document_processing/        
 │   ├── pdf_image_extractor.py    # Handles image and text extraction from PDFs
 │   ├── tools.py                  # Additional tools for processing documents
 │   └── ...
 │
-├── project/                     # Django project folder
-│   ├── settings.py              # Django settings
-│   ├── urls.py                  # Django URL routing
-│   ├── wsgi.py                  # WSGI configuration
+├── project/                     
+│   ├── settings.py          
+│   ├── urls.py                
+│   ├── wsgi.py              
 │   └── ...
 │
 ├── telegram_bot/                # Main logic for the Telegram bot
 │   ├── bot.py                   # Bot logic, including OpenAI integration
 │   └── ...
-├── Dockerfile                   # Docker configuration
-├── docker-compose.yml           # Docker Compose for local development
-├── requirements.txt             # Project dependencies
-├── .env                         # Environment variables for API keys, secrets (for local testing)
-├── gsc_key.json                 # GCP credentials (for local testing)
-└── README.md                    # Project documentation (this file)
-```
+├── Dockerfile                  
+├── docker-compose.yml          
+├── requirements.txt          
+├── .env                         
+└── README.md                    #```
 
 ### Current Status
 
