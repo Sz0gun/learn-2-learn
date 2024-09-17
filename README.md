@@ -12,19 +12,11 @@ The bot will also leverage **OpenAI's GPT** for conversation management, allowin
 ### Key Features (Planned)
 
 - **PDF Processing**:
-  - Extract text and images from PDF files for further processing.
-
 - **Text-to-Speech (TTS)**:
-  - Convert extracted text from PDF files into speech, providing users with an audio output.
-
 - **Image Enhancement**:
-  - Improve the quality of extracted images using the Real-ESRGAN model for high-resolution output.
-
 - **User Interaction via Telegram**:
   - Users will interact with the bot by sending PDF files through Telegram. The bot will process the files and return enhanced images and text-to-speech results.
-
 - **Conversation Context with OpenAI**:
-  - Use OpenAI's GPT model to maintain conversation context and allow users to answer quiz questions with feedback on their responses.
 
 ### Technical Stack & Setup
 
@@ -36,6 +28,7 @@ The bot will also leverage **OpenAI's GPT** for conversation management, allowin
 - **Pyrogram**: Pyrogram is a framework written from the ground up that acts as a fully-fledged Telegram client based on the MTProto API.
                         https://docs.pyrogram.org/
                         https://docs.pyrogram.org/topics/mtproto-vs-botapi.html
+  
 - **OpenAI API**: Used for conversation management and quiz feedback.
 
 ### Project Structure (Initial)
