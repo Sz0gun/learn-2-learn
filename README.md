@@ -95,11 +95,11 @@ learn-2-learn/
 2. **Set up environment variables**:
    - Create a `.env` file with the necessary API keys for Telegram, OpenAI, and Google Cloud Platform:
      ```plaintext
-     TELEGRAM_API_ID=your_telegram_api_id
-     TELEGRAM_API_HASH=your_telegram_api_hash
-     TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-     OPENAI_API_KEY=your_openai_api_key
-     GOOGLE_APPLICATION_CREDENTIALS=/path/to/gsc_key.json
+     TELEGRAM_API_ID=telegram_api_id
+     TELEGRAM_API_HASH=telegram_api_hash
+     TELEGRAM_BOT_TOKEN=telegram_bot_token
+     OPENAI_API_KEY=openai_api_key
+     GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json
      ```
 
 3. **Build and run the project with Docker**:
@@ -112,7 +112,7 @@ learn-2-learn/
 
 1. **Development**:
    - Continue developing the core features for text and image extraction from PDFs.
-   - Implement OpenAI integration to provide dynamic quiz questions and feedback.
+   - Implement OpenAI or Transformers integration to provide dynamic quiz questions and feedback.
    - Work on integrating the Text-to-Speech feature.
 
 2. **Testing**:
