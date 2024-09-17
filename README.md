@@ -1,7 +1,3 @@
-Oto zaktualizowana i poprawiona wersja pliku README, uwzględniająca, że jest to Twój pierwszy projekt do portfolio, który jest w fazie wczesnej implementacji:
-
----
-
 ### Learn to Learn API - Telegram Bot
 
 **Project Overview**
