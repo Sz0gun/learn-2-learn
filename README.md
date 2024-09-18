@@ -8,6 +8,7 @@ This project is my first portfolio project, where I am developing a Telegram bot
 - Enable interaction with users through Telegram chat, where they can upload PDF files and receive the processed outputs.
 
 The bot will also leverage **OpenAI's GPT** for conversation management, allowing users to answer quiz questions and get feedback on their responses. This project is still in its early stages of implementation.
+I plan to use a Telegram bot integrated with Google Cloud Platform (GCP) to automatically manage server instances for the ESRGAN AI model. Users will be able to use the bot to start and stop the server, which will process high-resolution images using the ESRGAN model.
 
 ### Key Features (Planned)
 
