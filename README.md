@@ -24,20 +24,22 @@ The bot will also leverage **OpenAI's GPT** for conversation management, allowin
   
 - **User Interaction via Telegram**:
   - Users will interact with the bot by sending PDF files through Telegram. The bot will process the files and return enhanced images and text-to-speech results.
-
 - **Conversation Context with OpenAI**:
-  - Use OpenAI's GPT model to maintain conversation context and allow users to answer quiz questions with feedback on their responses.
 
 ---
 
 ### Technical Stack & Setup
 
-- **Python 3.9+**: Core language for API development.
-- **Django**: Framework for managing the server-side API and routing.
-- **Google Cloud Platform (GCP)**: For running GPU-intensive tasks such as image enhancement.
-- **Real-ESRGAN**: Model used for enhancing the quality of images.
-- **Text-to-Speech (TTS)**: Engine for converting text into speech.
-- **Pyrogram**: Telegram API library in Python for managing communication with users.
+- **Python 3.9+**
+- **Django**
+- **Google Cloud Platform (GCP)**
+  I plan to use a Telegram bot integrated with Google Cloud Platform (GCP) to automatically manage server instances for the ESRGAN AI model. Users will be able to use the bot to start and stop the server, which will process high-resolution images using the ESRGAN model.
+- **Real-ESRGAN**
+- **Text-to-Speech (TTS)**
+- **Pyrogram**: Pyrogram is a framework written from the ground up that acts as a fully-fledged Telegram client based on the MTProto API.
+                        https://docs.pyrogram.org/
+                        https://docs.pyrogram.org/topics/mtproto-vs-botapi.html
+  
 - **OpenAI API**: Used for conversation management and quiz feedback.
 
 ---
@@ -91,11 +93,11 @@ This project is still in the **early stages of development**. The focus is curre
 2. **Set up environment variables**:
    - Create a `.env` file with the necessary API keys for Telegram, OpenAI, and Google Cloud Platform:
      ```plaintext
-     TELEGRAM_API_ID=your_telegram_api_id
-     TELEGRAM_API_HASH=your_telegram_api_hash
-     TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-     OPENAI_API_KEY=your_openai_api_key
-     GOOGLE_APPLICATION_CREDENTIALS=/path/to/gsc_key.json
+     TELEGRAM_API_ID=telegram_api_id
+     TELEGRAM_API_HASH=telegram_api_hash
+     TELEGRAM_BOT_TOKEN=telegram_bot_token
+     OPENAI_API_KEY=openai_api_key
+     GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json
      ```
 
 3. **Build and run the project with Docker**:
@@ -110,7 +112,7 @@ This project is still in the **early stages of development**. The focus is curre
 
 1. **Development**:
    - Continue developing the core features for text and image extraction from PDFs.
-   - Implement OpenAI integration to provide dynamic quiz questions and feedback.
+   - Implement OpenAI or Transformers integration to provide dynamic quiz questions and feedback.
    - Work on integrating the Text-to-Speech feature.
 
 2. **Testing**:
