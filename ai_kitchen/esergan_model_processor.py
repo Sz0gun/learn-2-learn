@@ -26,25 +26,25 @@ import logging
 logging.basicConfig(filenames='resource_monitor.log', level=logging.INFO)
 
 class RealESRGANProcessor:
-    def __init__(self, model_path, device='cuda', scale=4, dni_weight=0.8):
-        """Initialize the RealESRGANProcessor class"""
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(f"Model file not found at: {model_path}")
+    def __init__(self, bucket_name='m0dels_ai', model_blob_name='RealESRGAN_x4plus.pth', device='cuda', scale=4, dni_weight=0.8):
+        """
+        Initializes the RealESRGANProcessor class, downloads the model from GCS, and prepares it for use.
+        """
+        self.device = device
+        self.model_path = f"{os.getcwd()}/{model_blob_name}"
         
-        self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
-        print(f"Using device: {self.device}")
+        # Pobieramy model z GCS
+        gcs_service = GCPService()
+        gcs_service.download_file(bucket_name, model_blob_name, self.model_path)
+
+        # Inicjalizacja modelu Real-ESRGAN
+        if not os.path.exists(self.model_path):
+            raise FileNotFoundError(f"Model file not found: {self.model_path}")
 
         # Monitor resources before model initialization
         self.monitor_resources("Before model initialization")
         try:
-            # Load the RealESRGAN model
-            self.model = RealESRGANer(
-                scale=scale, 
-                model_path=model_path, 
-                dni_weight=dni_weight, 
-                device=self.device
-            )
-            self.model.to(self.device)
+            self.model = RealESRGANer(scale=scale, dni_weight=dni_weight, device=self.device)
         except Exception as e:
             logging.error(f"Error loading model: {e}")
             raise e
@@ -53,20 +53,18 @@ class RealESRGANProcessor:
         self.monitor_resources("After model initialization")
         print("RealESRGAN model loaded and ready!")
 
-    def monitor_resources(self, message):
-        """Function to monitor system resources"""
-        memory = psutil.virtual_memory()
-        log_message = f"=== Resource Monitoring ({message}) ===\n"
-        log_message += f"Total RAM: {memory.total / (1024 ** 3):.2f} GB\n"
-        log_message += f"Available RAM: {memory.available / (1024 ** 3):.2f} GB\n"
-        log_message += f"Used RAM: {memory.used / (1024 ** 3):.2f} GB\n"
-        log_message += f"Memory usage percentage: {memory.percent}%\n"
-        
-        if torch.cuda.is_available():
-            log_message += f"GPU memory usage: {torch.cuda.memory_allocated() / (1024 ** 3):.2f} GB\n"
-            log_message += f"Available GPU memory: {torch.cuda.memory_reserved() / (1024 ** 3):.2f} GB\n"
-        
-        logging.info(log_message)
+    def enhance_image(self, image):
+        """
+        Enhances the input image using the Real-ESRGAN model.
+        This method includes all the necessary steps: preprocessing, inference, and post-processing.
+
+        :param image: PIL image to be enhanced.
+        :return: Enhanced PIL image.
+        """
+        image_tensor = self.pre_process_image(image)
+        processed_image = self.run_inference(image_tensor)
+        enhanced_image = self.post_process_image(processed_image)
+        return enhanced_image
 
     def pre_process_image(self, image_path):
         """Method for preprocessing the input image before inference"""
@@ -123,49 +121,17 @@ class RealESRGANProcessor:
             logging.error(f"Error during post-processing: {e}")
             raise e
 
-    def process_image(self, image):
+    def process_pdf(self, pdf_path, start_page=1, end_page=None, dpi=300):
         """
-        Process a single image, enhance it using ESRGAN, and return the enhanced image.
-
-        Parameters:
-        - image (PIL.image): The input image to be processed.
-
-        Returns:
-        - Enhanced image (PIL.Image) in-memory.
-        """
-        print(f"Processing a single image...")
-
-        try:
-            # Pre-process the image
-            image_tensor = self.pre_process_image(image)
-
-            # Run inference
-            processed_image = self.run_inference(image_tensor)
-
-            # Post-process the result
-            enhanced_image = self.post_process_image(processed_image)
-
-            return enhanced_iamge # Return in-memory image
-
-        except Exception as e:
-            logging.error(f"Error processing image: {e}")
-            raise e
-            
-    async def process_pdf(self, pdf_path, output_dir, start_page=1, end_page=None, dpi=150):
-        """
-        Process each page of a PDF as an image and enhance it using ESRGAN.
-
-        Parameters:
-        - pdf_path (str): Path to the input PDF file.
-        - start_page (int): The first page to process (1-based index).
-        - end_page (int or None): The last page to process. If None, process to the end of the PDF.
-        - dpi (int): The resolution of the converted images (default is 150).
-
-        Returns:
-        - List of enhanced images (PIL.Image) in-memory.
+        Processes a PDF file by converting each page to an image and enhancing the pages using ESRGAN.
+        
+        :param pdf_path: Path to the PDF file.
+        :param start_page: Starting page number to process.
+        :param end_page: Last page to process.
+        :param dpi: Dots per inch for image conversion.
+        :return: List of enhanced PIL images for each page.
         """
         print(f"Processing PDF: {pdf_path} from page {start_page} to {end_page if end_page else 'last'}")
-        # Convert the specified range of PDF pages to images
         try:
             images = convert_from_path(pdf_path, dpi=dpi, first_page=start_page, last_page=end_page)
             print(f"PDF conversion completed. {len(images)} pages processed.")
@@ -175,27 +141,25 @@ class RealESRGANProcessor:
 
         enhanced_images = []
 
-        # Process each image (each page in the range)
         for idx, image in enumerate(images, start=start_page):
             try:
-                # Convert PIL image to the tensor for ESRGAN processing
                 image_tensor = self.pre_process_image(image)
-
-                # Process the image using the existing pipeline
                 print(f"Processing page {idx}...")
                 processed_image = self.run_inference(image_tensor)
-
-                # Post-process the image and keep it in-memory
                 enhanced_image = self.post_process_image(processed_image)
-
-                # Append the enhanced image to the list
+                enhanced_images.append(enhanced_image)
             except Exception as e:
                 logging.error(f"Error processing page {idx}: {e}")
         
-        return enhanced_images # Return list of in-memory enhanced images
+        return enhanced_images
 
     def save_image(self, sr_image, output_path):
-        """Save the result image to disk"""
+        """
+        Saves the enhanced image to the specified file path.
+        
+        :param sr_image: PIL image to be saved.
+        :param output_path: Path where the image will be saved.
+        """
         try:
             sr_image.save(output_path)
             print(f"Image saved as: {output_path}")
@@ -205,11 +169,25 @@ class RealESRGANProcessor:
             raise e
 
     def display_image(self, sr_image):
-        """Display the result image"""
+        """
+        Displays the enhanced image using Matplotlib.
+        
+        :param sr_image: PIL image to be displayed.
+        """
         plt.imshow(sr_image)
         plt.axis('off')  # Turn off axes for clean display
         plt.show()
         print("Image has been displayed.")
+
+    def monitor_resources(self, message):
+        """
+        Logs system memory usage at different stages of the image processing pipeline.
+        
+        :param message: Custom log message to indicate the current stage of processing.
+        """
+        memory = psutil.virtual_memory()
+        log_message = f"=== Resource Monitor: {message} ===\nMemory: {memory.percent}%\n"
+        logging.info(log_message)
 
 
 

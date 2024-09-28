@@ -15,23 +15,25 @@ RUN apt-get update && apt-get install -y \
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the requirements.txt file into the container
-COPY requirements.txt /app/
+# Copy the pyproject.toml and poetry.lock files into the container
+COPY pyproject.toml poetry.lock /app/
 
-# Install Python dependencies
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Poetry
+RUN pip install --upgrade pip && pip install poetry
+
+# Install dependencies using Poetry, excluding optional dependencies
+RUN poetry install --no-root --without torch_deps
 
 # Copy the rest of your application code into the container
 COPY . /app/
 
 # Set the path for Google Cloud credentials (optional)
 # This assumes the credentials will be passed as a GitHub Secret in GitHub Actions
-ARG GOOGLE_APPLICATION_CREDENTIALS=/app/gcs_key.json
+ARG GOOGLE_APPLICATION_CREDENTIALS=/app/gsc_key.json
 ENV GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
 
 # Expose the application port (for web apps)
 EXPOSE 8000
 
-# Command to run your application (replace with your app's run command)
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Command to run your application
+CMD ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]

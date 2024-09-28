@@ -1,0 +1,39 @@
+name: Deploy Project via GitHub Actions
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: |
+          pip install --upgrade pip
+          pip install poetry
+
+      - name: Install dependencies
+        run: |
+          poetry install
+
+      - name: Set up Google Cloud credentials
+        run: echo "${{ secrets.GCS_CREDENTIALS }}" > /tmp/gcs_key.json
+
+      - name: Set up Google Cloud environment variable
+        run: |
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcs_key.json" >> $GITHUB_ENV
+
+      - name: Run the project
+        run: |
+          poetry run python manage.py runserver 0.0.0.0:8000

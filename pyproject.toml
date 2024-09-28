@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "learn-2-learn"
+version = "0.1.0"
+description = "Project for processing images and text using Real-ESRGAN and PyTorch"
+authors = ["Maksym Viunov <mks.viunov@gmail.com>"]
+readme = "README.md"
+license = "MIT"
+
+packages = [
+    { include = "ai_kitchen" },
+    { include = "telegram_bot" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+Django = "4.2.2"
+djangorestframework = "3.14.0"
+gunicorn = "20.1.0"
+asgiref = "3.8.1"
+dj-database-url = "2.2.0"
+whitenoise = "6.0.0"
+pyrogram = "2.0.106"
+python-dotenv = "1.0.0"
+openai = "0.28"
+click = "8.1.7"
+numpy = "1.26.0"
+pytz = "2024.1"
+opencv-python = "4.7.0.72"
+realesrgan = {git = "https://github.com/xinntao/Real-ESRGAN.git"}
+torch = {version = "2.0.1", optional = true}
+torchvision = {version = "0.15.2", optional = true}
+psycopg2-binary = "^2.9.9"
+psycopg2 = "^2.9.9"
+pytest = "^8.3.3"
+
+[tool.poetry.extras]
+torch_deps = ["torch", "torchvision"]
+image_processing = ["basicsr", "facexlib", "gfpgan", "pdf2image", "poppler-utils"]
+google_cloud = ["google-cloud-storage"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

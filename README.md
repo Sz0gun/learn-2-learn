@@ -1,34 +1,34 @@
-Oto zaktualizowana i poprawiona wersja pliku README, uwzględniająca, że jest to Twój pierwszy projekt do portfolio, który jest w fazie wczesnej implementacji:
 
----
-
-### Learn to Learn API - Telegram Bot
+# Learn to Learn API - Telegram Bot
 
 **Project Overview**
 
-This project is my first portfolio project, where I am developing a Telegram bot that processes PDF files. The bot extracts both text and images, and performs further processing on each. The main goals of this bot are to:
+This project is my first portfolio project, where I am developing a Telegram bot that processes PDF files. The bot extracts both text and images and performs further processing on each. The main goals of this bot are to:
 - Convert extracted text into speech using a Text-to-Speech (TTS) engine.
 - Enhance the quality of extracted images using the Real-ESRGAN model.
 - Enable interaction with users through Telegram chat, where they can upload PDF files and receive the processed outputs.
 
 The bot will also leverage **OpenAI's GPT** for conversation management, allowing users to answer quiz questions and get feedback on their responses. This project is still in its early stages of implementation.
 
-### Key Features (Planned)
+---
 
+### Key Features (Planned)
 - **PDF Processing**:
   - Extract text and images from PDF files for further processing.
-
+  
 - **Text-to-Speech (TTS)**:
   - Convert extracted text from PDF files into speech, providing users with an audio output.
-
+  
 - **Image Enhancement**:
   - Improve the quality of extracted images using the Real-ESRGAN model for high-resolution output.
-
+  
 - **User Interaction via Telegram**:
   - Users will interact with the bot by sending PDF files through Telegram. The bot will process the files and return enhanced images and text-to-speech results.
 
 - **Conversation Context with OpenAI**:
   - Use OpenAI's GPT model to maintain conversation context and allow users to answer quiz questions with feedback on their responses.
+
+---
 
 ### Technical Stack & Setup
 
@@ -40,49 +40,45 @@ The bot will also leverage **OpenAI's GPT** for conversation management, allowin
 - **Pyrogram**: Telegram API library in Python for managing communication with users.
 - **OpenAI API**: Used for conversation management and quiz feedback.
 
+---
+
 ### Project Structure (Initial)
 
 ```plaintext
 learn-2-learn/
 │
-├── ai_kitchen/                  # Folder for AI models
+├── .github/workflows/            # CI/CD configuration for deployment
+│   └── deploy.yml
+│
+├── ai_kitchen/                   # Folder for AI models
 │   ├── esrgan_model_processor.py # ESRGAN model for image enhancement
 │   ├── tools.py                  # Tools for text extraction from PDFs
-│   └── ...
 │
-├── document_processing/         # New folder for handling PDF processing
-│   ├── pdf_image_extractor.py    # Handles image and text extraction from PDFs
-│   ├── tools.py                  # Additional tools for processing documents
-│   └── ...
+├── project/                      
+│   ├── settings.py               
+│   ├── urls.py                   
 │
-├── project/                     # Django project folder
-│   ├── settings.py              # Django settings
-│   ├── urls.py                  # Django URL routing
-│   ├── wsgi.py                  # WSGI configuration
-│   └── ...
+├── telegram_bot/                 # Main logic for the Telegram bot
+│   ├── bot.py                    # Bot logic, including OpenAI integration
+│   ├── gcs_auth.py               # Google Cloud Storage authentication
+│   ├── telegram_config.py        # Configuration for the Telegram bot
 │
-├── telegram_bot/                # Main logic for the Telegram bot
-│   ├── bot.py                   # Bot logic, including OpenAI integration
-│   └── ...
-├── Dockerfile                   # Docker configuration
-├── docker-compose.yml           # Docker Compose for local development
-├── requirements.txt             # Project dependencies
-├── .env                         # Environment variables for API keys, secrets (for local testing)
-├── gsc_key.json                 # GCP credentials (for local testing)
-└── README.md                    # Project documentation (this file)
+├── Dockerfile                    
+├── docker-compose.yml            # Docker Compose for local development
+├── pyproject.toml                # Poetry project configuration
+├── README.md                     
 ```
+
+---
 
 ### Current Status
 
-- This project is still in the **early stages of development**. The focus is currently on:
-  - Extracting text and images from PDF files.
-  - Setting up basic bot communication through Telegram.
-  - Initial integration of **Real-ESRGAN** for image enhancement and **OpenAI** for conversation management.
+This project is still in the **early stages of development**. The focus is currently on:
+- Extracting text and images from PDF files.
+- Setting up basic bot communication through Telegram.
+- Initial integration of **Real-ESRGAN** for image enhancement and **OpenAI** for conversation management.
 
-- **Planned Features**:
-  - Add text-to-speech functionality.
-  - Implement quiz questions using OpenAI.
-  - Improve the handling of images and PDFs for better performance.
+---
 
 ### Installation
 
@@ -108,6 +104,8 @@ learn-2-learn/
      docker-compose up --build
      ```
 
+---
+
 ### Next Steps
 
 1. **Development**:
@@ -120,8 +118,10 @@ learn-2-learn/
    - Perform integration tests to ensure smooth communication between the bot, OpenAI, and Google Cloud services.
 
 3. **Refinements**:
-   - As the project progresses, focus on improving performance and adding asynchronous handling for large PDFs and images.
+   - Focus on improving performance and adding asynchronous handling for large PDFs and images.
    - Securely manage API keys and credentials, particularly for production environments.
+
+---
 
 ### Goals
 
