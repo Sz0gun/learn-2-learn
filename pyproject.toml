@@ -30,8 +30,12 @@ realesrgan = {git = "https://github.com/xinntao/Real-ESRGAN.git"}
 torch = {version = "2.0.1", optional = true}
 torchvision = {version = "0.15.2", optional = true}
 psycopg2-binary = "^2.9.9"
-psycopg2 = "^2.9.9"
 pytest = "^8.3.3"
+google-cloud-secret-manager = "^2.20.2"
+google-cloud-storage = "^2.18.2"
+google-cloud-bigquery = "^3.26.0"
+google-cloud-pubsub = "^2.25.2"
+google-cloud-vision = "^3.7.4"
 
 [tool.poetry.extras]
 torch_deps = ["torch", "torchvision"]
