@@ -22,7 +22,7 @@ COPY pyproject.toml poetry.lock /app/
 RUN pip install poetry==1.3.1
 
 # Install dependencies using Poetry, excluding optional dependencies
-RUN poetry install --no-root --only
+RUN poetry install --no-root
 
 # Copy the rest of your application code into the container
 COPY . /app/
