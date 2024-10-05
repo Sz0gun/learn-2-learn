@@ -7,6 +7,13 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/gcs_key.json
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/gsc_key.json
     volumes:
-      - /home/beaver/Work/learn-2-learn/gsc_key.json:/app/gsc_key.json
+      - /home/szogun/Documents/work/gsc_key.json:/app/gsc_key.json
+    depends_on:
+      - redis
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"

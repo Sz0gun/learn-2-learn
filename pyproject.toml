@@ -7,7 +7,6 @@ readme = "README.md"
 license = "MIT"
 
 packages = [
-    { include = "ai_kitchen" },
     { include = "telegram_bot" }
 ]
 
@@ -36,6 +35,10 @@ google-cloud-storage = "^2.18.2"
 google-cloud-bigquery = "^3.26.0"
 google-cloud-pubsub = "^2.25.2"
 google-cloud-vision = "^3.7.4"
+fastapi = "^0.115.0"
+uvicorn = "^0.31.0"
+redis = "^5.1.1"
+pydantic = "^2.9.2"
 
 [tool.poetry.extras]
 torch_deps = ["torch", "torchvision"]

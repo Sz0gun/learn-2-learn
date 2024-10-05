@@ -4,3 +4,4 @@ gsc_key.json
 *.pyc
 __pycache__/
 *.egg-info/
+.vscode

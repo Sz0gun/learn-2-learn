@@ -2,7 +2,6 @@ import os
 from pyrogram import Client, filters
 from PIL import Image
 import openai
-from telegram_config import  TELEGRAM_BOT_TOKEN
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
