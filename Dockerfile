@@ -19,18 +19,13 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock /app/
 
 # Install Poetry
-RUN pip install --upgrade pip && pip install poetry
+RUN pip install poetry==1.3.1
 
 # Install dependencies using Poetry, excluding optional dependencies
-RUN poetry install --no-root --without torch_deps
+RUN poetry install --no-root --only
 
 # Copy the rest of your application code into the container
 COPY . /app/
-
-# Set the path for Google Cloud credentials (optional)
-# This assumes the credentials will be passed as a GitHub Secret in GitHub Actions
-ARG GOOGLE_APPLICATION_CREDENTIALS=/app/gsc_key.json
-ENV GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
 
 # Expose the application port (for web apps)
 EXPOSE 8000
