@@ -41,6 +41,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GIT_TOKEN }}
 
+      - name: Start Redis container
+        run: |
+          docker run -d --name redis-container -p 6379:6379 redis:alpine
+
       - name: Build Docker image
         uses: docker/build-push-action@v4
         with:
@@ -51,11 +55,15 @@ jobs:
 
       - name: Test Docker image (Sanity Check)
         run: |
-          docker run -d --name test-container -p 8000:8000 ghcr.io/sz0gun/learn-2-learn:latest
-          sleep 30
+          docker run -d --name test-container -p 8000:8000 --link redis-container:redis ghcr.io/sz0gun/learn-2-learn:latest
+          sleep 60  # Zwiększamy czas oczekiwania
           curl -f http://localhost:8000/ || { echo "Sanity check failed"; exit 1; }
           docker stop test-container
           docker rm test-container
+
+      - name: Check container logs
+        run: |
+          docker logs test-container
 
       - name: Push Docker image to GHCR
         if: ${{ success() }}
