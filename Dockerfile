@@ -27,8 +27,8 @@ RUN poetry install --no-root
 # Copy the rest of your application code into the container
 COPY . /app/
 
-# Expose the application port (for web apps)
+# Expose the application port (for FastAPI)
 EXPOSE 8000
 
-# Command to run your application
-CMD ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Command to run your FastAPI application
+CMD ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

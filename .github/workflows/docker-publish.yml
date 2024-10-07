@@ -1,28 +1,76 @@
-name: Build and Push Docker Image
+name: Build, Test and Push Docker Image
 
 on:
   push:
-    branches:
-      - main
-      - integracja-fastapi-redis
+    branches: [main, integracja-fastapi-redis]
 
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_WIF_PROVIDER: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+  GCP_SERVICE_ACCOUNT: 'my-service-account@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      - name: Validate GCP Project ID
+        run: |
+          if [[ ! "$GCP_PROJECT_ID" =~ ^[a-z][-a-z0-9]{4,28}[a-z0-9]$ ]]; then
+            echo "Invalid GCP Project ID"
+            exit 1
+          fi
 
-    - name: Login to GitHub Container Registry
-      run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ env.GCP_WIF_PROVIDER }}
+          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
 
-    - name: Build and push Docker image
-      run: |
-        docker build -t ghcr.io/sz0gun/learn-2-learn/learn-2-learn:latest .
-        docker push ghcr.io/sz0gun/learn-2-learn/learn-2-learn:latest
-  
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: false
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      - name: Test Docker image (Sanity Check)
+        run: |
+          docker run -d --name test-container -p 8000:8000 ghcr.io/${{ github.repository }}:${{ github.sha }}
+          sleep 5  # Wait for the container to start
+          curl -f http://localhost:8000/ || { echo "Sanity check failed"; exit 1; }
+          docker stop test-container
+          docker rm test-container
+
+      - name: Push Docker image to GHCR
+        if: ${{ success() }}
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}:latest
+
+      - name: Clean up
+        if: always()
+        run: |
+          echo "Performing cleanup tasks..."

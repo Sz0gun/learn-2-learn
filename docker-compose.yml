@@ -1,19 +1,33 @@
-version: '3.8'
-
 services:
-  web:
-    build:
-      context: .
-    ports:
-      - "8000:8000"
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/gsc_key.json
-    volumes:
-      - /home/szogun/Documents/work/gsc_key.json:/app/gsc_key.json
-    depends_on:
-      - redis
-
   redis:
-    image: "redis:alpine"
+    image: redis:alpine
     ports:
       - "6379:6379"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: poetry run uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+
+networks:
+  app-network:
+    driver: bridge
