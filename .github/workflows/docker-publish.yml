@@ -1,4 +1,4 @@
-name: Build, Test and Push Docker Image
+name: Build, Test, and Push Docker Image
 
 on:
   push:
@@ -56,15 +56,11 @@ jobs:
 
       - name: Test Docker image (Sanity Check)
         run: |
-          docker run -d --name test-container -p 8000:8000 --link redis-container:redis ghcr.io/sz0gun/learn-2-learn:latest
+          docker run -d --name test-container -e REDIS_HOST=redis -p 8000:8000 --link redis-container:redis ghcr.io/sz0gun/learn-2-learn:latest
           sleep 90  # Increased wait time for FastAPI to start
           curl -f http://localhost:8000/ || { echo "Sanity check failed"; docker logs test-container; exit 1; }
           docker stop test-container
           docker rm test-container
-
-      - name: Check container logs
-        run: |
-          docker logs test-container
 
       - name: Push Docker image to GHCR
         if: ${{ success() }}
