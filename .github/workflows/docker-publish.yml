@@ -4,6 +4,10 @@ on:
   push:
     branches: [main, integracja-fastapi-redis]
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_WIF_PROVIDER: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
@@ -29,10 +33,14 @@ jobs:
           workload_identity_provider: ${{ env.GCP_WIF_PROVIDER }}
           service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
 
-      - name: Install gcloud SDK
+      - name: Check if gcloud SDK is installed
         run: |
-          echo "Installing gcloud SDK..."
-          sudo apt-get update && sudo apt-get install -y google-cloud-sdk
+          if ! command -v gcloud &> /dev/null; then
+            echo "gcloud SDK not found, installing..."
+            sudo apt-get update && sudo apt-get install -y google-cloud-sdk
+          else
+            echo "gcloud SDK is already installed."
+          fi
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
@@ -60,8 +68,9 @@ jobs:
       - name: Test Docker image (Sanity Check)
         run: |
           docker run -d --name test-container -p 8000:8000 ghcr.io/${{ github.repository }}:${{ github.sha }}
-          sleep 10  # Adjust time if necessary for app startup
-          curl -f http://localhost:8000/ || { echo "Sanity check failed"; exit 1; }
+          sleep 20  # Wait for the container to start, adjust as necessary
+          docker logs test-container  # Check logs to confirm successful startup
+          curl -f http://localhost:8000/ || { echo "Sanity check failed"; docker logs test-container; exit 1; }
           docker stop test-container
           docker rm test-container
 
