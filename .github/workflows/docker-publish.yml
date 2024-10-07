@@ -49,9 +49,10 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          push: false
+          push: true
           tags: |
             ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
+            ghcr.io/sz0gun/learn-2-learn:latest
 
       - name: Test Docker image (Sanity Check)
         run: |
