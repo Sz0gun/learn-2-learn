@@ -7,8 +7,12 @@ from contextlib import asynccontextmanager
 
 # Define Redis connection details
 redis_host = os.getenv('REDIS_HOST', 'redis')
-redis_port = int(os.getenv('REDIS_PORT', 6379))
+redis_port = os.getenv('REDIS_PORT', 6379)
 redis_db = int(os.getenv('REDIS_DB', 0))
+
+if redis_port.startswith('tcp://'):
+    redis_port = redis_port.split(':')[-1]
+redis_port = int(redis_port)
 
 class Item(BaseModel):
     key: str
@@ -47,8 +51,4 @@ async def get_value(key: str, redis: Redis = Depends(get_redis)) -> Dict[str, st
         return {"key": key, "value": value.decode()}
     except RedisError as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving value from Redis: {str(e)}")
-    
-@app.get("/healthcheck")
-async def healthcheck():
-    return {"status": "ok"}
 

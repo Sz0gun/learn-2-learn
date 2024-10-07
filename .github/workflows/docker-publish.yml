@@ -15,6 +15,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Set up cache for Poetry dependencies
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pip
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock')}}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      # Install dependencies only if need
+      - name: Install dependencies
+        run: poetry install --no-root
+
       - name: Pre-build Docker cleanup
         run: docker system prune -a --volumes -f
 
@@ -55,7 +70,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          push: false  # Na razie nie wypychamy obrazu
+          push: false
           tags: |
             ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
             ghcr.io/sz0gun/learn-2-learn:latest
