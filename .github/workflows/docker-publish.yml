@@ -47,11 +47,11 @@ jobs:
           context: .
           push: false
           tags: |
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
 
       - name: Test Docker image (Sanity Check)
         run: |
-          docker run -d --name test-container -p 8000:8000 ghcr.io/${{ github.repository }}:${{ github.sha }}
+          docker run -d --name test-container -p 8000:8000 ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
           sleep 10  # Adjust time if necessary for app startup
           curl -f http://localhost:8000/ || { echo "Sanity check failed"; exit 1; }
           docker stop test-container
@@ -64,8 +64,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
+            ghcr.io/sz0gun/learn-2-learn:latest
 
       - name: Clean up
         if: always()
