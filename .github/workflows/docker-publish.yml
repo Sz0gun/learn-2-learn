@@ -52,7 +52,7 @@ jobs:
       - name: Test Docker image (Sanity Check)
         run: |
           docker run -d --name test-container -p 8000:8000 ghcr.io/sz0gun/learn-2-learn:latest
-          sleep 10
+          sleep 30
           curl -f http://localhost:8000/ || { echo "Sanity check failed"; exit 1; }
           docker stop test-container
           docker rm test-container
