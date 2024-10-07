@@ -7,22 +7,16 @@ ENV PYTHONUNBUFFERED=1
 
 # Install system-level dependencies
 RUN apt-get update && apt-get install -y \
-    poppler-utils \
-    tesseract-ocr \
     git \
+    curl \
     && rm -rf /var/lib/apt/lists/*
+
+
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
 
 # Set the working directory inside the container
 WORKDIR /app
-
-# Copy the pyproject.toml and poetry.lock files into the container
-COPY pyproject.toml poetry.lock /app/
-
-# Install Poetry
-RUN pip install poetry==1.3.1
-
-# Install dependencies using Poetry, excluding optional dependencies
-RUN poetry install --no-root
 
 # Copy the rest of your application code into the container
 COPY . /app/
