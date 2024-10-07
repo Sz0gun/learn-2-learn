@@ -10,9 +10,13 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Pre-build Docker cleanup
+        run: docker system prune -a --volumes -f
 
       - name: Validate GCP Project ID
         run: |
@@ -46,21 +50,21 @@ jobs:
         run: |
           docker run -d --name redis-container -p 6379:6379 redis:alpine
 
-      # Build Docker image, but do not push yet
+      # Build Docker image and tag it
       - name: Build Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
-          push: false  
+          push: false  # Na razie nie wypychamy obrazu
           tags: |
             ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
             ghcr.io/sz0gun/learn-2-learn:latest
 
-      # Sanity Check - test basic functionality
+      # Run healthcheck (Sanity Check)
       - name: Run healthcheck (Sanity Check)
         run: |
           docker run -d --name test-container -e REDIS_HOST=redis -p 8000:8000 --link redis-container:redis ghcr.io/sz0gun/learn-2-learn:latest
-          sleep 90  # Czekamy na uruchomienie FastAPI
+          sleep 90
           poetry run python scripts/healthcheck.py || { echo "Sanity check failed"; docker logs test-container; exit 1; }
           docker stop test-container
           docker rm test-container
@@ -74,7 +78,7 @@ jobs:
 
       # Push Docker image to GHCR if tests succeed
       - name: Push Docker image to GHCR
-        if: ${{ success() }}  # Obraz wypchnie się tylko, jeśli testy przejdą
+        if: ${{ success() }}
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -83,6 +87,7 @@ jobs:
             ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
             ghcr.io/sz0gun/learn-2-learn:latest
 
+      # Clean up Docker resources
       - name: Clean up Docker resources
         if: always()
         run: docker system prune -f
