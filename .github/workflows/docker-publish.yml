@@ -29,6 +29,11 @@ jobs:
           workload_identity_provider: ${{ env.GCP_WIF_PROVIDER }}
           service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
 
+      - name: Install gcloud SDK
+        run: |
+          echo "Installing gcloud SDK..."
+          sudo apt-get update && sudo apt-get install -y google-cloud-sdk
+
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
@@ -55,7 +60,7 @@ jobs:
       - name: Test Docker image (Sanity Check)
         run: |
           docker run -d --name test-container -p 8000:8000 ghcr.io/${{ github.repository }}:${{ github.sha }}
-          sleep 5  # Wait for the container to start
+          sleep 10  # Adjust time if necessary for app startup
           curl -f http://localhost:8000/ || { echo "Sanity check failed"; exit 1; }
           docker stop test-container
           docker rm test-container
@@ -74,3 +79,4 @@ jobs:
         if: always()
         run: |
           echo "Performing cleanup tasks..."
+          docker system prune -f

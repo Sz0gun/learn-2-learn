@@ -40,7 +40,7 @@
             "outFiles": [
                 "${workspaceFolder}/out/**/*.js"
             ],
-            "preLaunchTask": "npm"
+            "preLaunchTask": "npm: watch"
         },
         {
             "name": "Python Debugger: Django",
@@ -51,7 +51,63 @@
                 "runserver"
             ],
             "django": true,
-            "autoStartBrowser": false
+            "justMyCode": true,
+            "autoReload": {
+                "enable": true
+            }
+        },
+        {
+            "name": "Python Debugger: FastAPI",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "args": [
+                "run"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "env": {
+                "UVICORN_DEBUG": "1"
+            }
+        },
+        {
+            "name": "Uvicorn: FastAPI",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "main:app",
+                "--reload"
+            ],
+            "jinja": true,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python Debugger: Test Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/tests",
+            "args": [
+                "-m",
+                "unittest",
+                "${file}"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python Debugger: Docker Attach",
+            "type": "debugpy",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "/app"
+                }
+            ]
         }
     ]
 }
