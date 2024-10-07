@@ -47,3 +47,8 @@ async def get_value(key: str, redis: Redis = Depends(get_redis)) -> Dict[str, st
         return {"key": key, "value": value.decode()}
     except RedisError as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving value from Redis: {str(e)}")
+    
+@app.get("/healthcheck")
+async def healthcheck():
+    return {"status": "ok"}
+

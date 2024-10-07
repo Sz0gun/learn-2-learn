@@ -41,29 +41,40 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GIT_TOKEN }}
 
+      # Start Redis for integration with FastAPI
       - name: Start Redis container
         run: |
           docker run -d --name redis-container -p 6379:6379 redis:alpine
 
+      # Build Docker image, but do not push yet
       - name: Build Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
-          push: true
+          push: false  
           tags: |
             ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
             ghcr.io/sz0gun/learn-2-learn:latest
 
-      - name: Test Docker image (Sanity Check)
+      # Sanity Check - test basic functionality
+      - name: Run healthcheck (Sanity Check)
         run: |
           docker run -d --name test-container -e REDIS_HOST=redis -p 8000:8000 --link redis-container:redis ghcr.io/sz0gun/learn-2-learn:latest
-          sleep 90  # Increased wait time for FastAPI to start
-          curl -f http://localhost:8000/ || { echo "Sanity check failed"; docker logs test-container; exit 1; }
+          sleep 90  # Czekamy na uruchomienie FastAPI
+          poetry run python scripts/healthcheck.py || { echo "Sanity check failed"; docker logs test-container; exit 1; }
           docker stop test-container
           docker rm test-container
 
+      # Run full tests inside Docker container
+      - name: Run full test suite
+        run: |
+          docker run --name test-container ghcr.io/sz0gun/learn-2-learn:latest pytest tests/
+          docker stop test-container
+          docker rm test-container
+
+      # Push Docker image to GHCR if tests succeed
       - name: Push Docker image to GHCR
-        if: ${{ success() }}
+        if: ${{ success() }}  # Obraz wypchnie się tylko, jeśli testy przejdą
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -72,8 +83,6 @@ jobs:
             ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
             ghcr.io/sz0gun/learn-2-learn:latest
 
-      - name: Clean up
+      - name: Clean up Docker resources
         if: always()
-        run: |
-          echo "Performing cleanup tasks..."
-          docker system prune -f
+        run: docker system prune -f
