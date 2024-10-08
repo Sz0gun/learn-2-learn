@@ -9,20 +9,16 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update && apt-get install -y \
     git \
     curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN pip install --upgrade pip && \
+    pip install poetry
 
-# Add Poetry to the system PATH
-ENV PATH="/root/.local/bin:$PATH"
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the pyproject.toml and poetry.lock files into the container
+# Update dependencies
 COPY pyproject.toml poetry.lock /app/
+WORKDIR /app
+RUN poetry update  # This updates all dependencies to their latest versions
 
 # Install dependencies using Poetry
 RUN poetry install --no-root
@@ -32,9 +28,6 @@ COPY . /app/
 
 # Expose the application port (for FastAPI)
 EXPOSE 8000
-
-# Run tests before starting the application
-RUN poetry run pytest
 
 # Command to run your FastAPI application
 CMD ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

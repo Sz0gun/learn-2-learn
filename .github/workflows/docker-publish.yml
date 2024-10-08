@@ -30,12 +30,8 @@
             tags: |
               ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
               ghcr.io/sz0gun/learn-2-learn:latest
-
-        - name: Check if healthcheck.py exist
-          run: |
-            docker run ghcr.io/sz0gun/learn-2-learn:latest find /app -name healthcheck.py
-          
-        - name: Login to GitHub Container Registry using GHCR_PAT
+              
+        - name: Login to GitHub Container Registry using GIT_TOKEN
           uses: docker/login-action@v2
           with:
             registry: ghcr.io
@@ -48,6 +44,11 @@
               echo "Invalid GCP Project ID"
               exit 1
             fi
+            
+        - name: Check if healthcheck.py exist
+          run: |
+            docker run ghcr.io/sz0gun/learn-2-learn:latest find /app -name healthcheck.py
+          
 
         - name: Authenticate to Google Cloud with JSON key
           uses: google-github-actions/auth@v1
