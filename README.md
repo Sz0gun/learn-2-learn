@@ -1,136 +1,90 @@
 
-# Learn to Learn API - Telegram Bot
+# Learn-2-Learn API - Telegram Bot
 
-**Project Overview**
+## Project Overview
 
-This project is my first portfolio project, where I am developing a Telegram bot that processes PDF files. The bot extracts both text and images and performs further processing on each. The main goals of this bot are to:
-- Convert extracted text into speech using a Text-to-Speech (TTS) engine.
-- Enhance the quality of extracted images using the Real-ESRGAN model.
-- Enable interaction with users through Telegram chat, where they can upload PDF files and receive the processed outputs.
+The **Learn-2-Learn** project has successfully configured key components such as **FastAPI**, **Redis**, and the deployment of the application in **Docker containers**. The project also integrates with **GitHub Container Registry (GHCR)** for managing container images. 
 
-The bot will also leverage **OpenAI's GPT** for conversation management, allowing users to answer quiz questions and get feedback on their responses. This project is still in its early stages of implementation.
+### Key Milestones:
+- **FastAPI and Redis Integration**: FastAPI serves as the primary API framework for handling asynchronous requests, while Redis provides caching and session management.
+- **Docker & CI/CD**: The application is containerized using Docker, and a CI/CD pipeline is established using GitHub Actions to automate testing and deployment processes.
+- **GitHub Container Registry**: Integrated GHCR for efficient Docker image management and deployment.
 
----
+### Current Objectives:
+The next phase of development focuses on:
+1. **Extending Application Functionality**: New features are planned for improved performance and expanded use cases.
+2. **Integration with Vicuna Model**: AI model integration for advanced interactions.
+3. **Kubernetes Deployment**: The system will be deployed on Kubernetes for better scalability and resource management.
+4. **Background Task Optimization with Celery**: Celery will handle background tasks, improving efficiency and responsiveness.
+5. **Monitoring and Analysis**: Tools such as Prometheus and Grafana will be introduced to monitor system performance and ensure reliability.
 
-### Key Features (Planned)
-- **PDF Processing**:
-  - Extract text and images from PDF files for further processing.
-  
-- **Text-to-Speech (TTS)**:
-  - Convert extracted text from PDF files into speech, providing users with an audio output.
-  
-- **Image Enhancement**:
-  - Improve the quality of extracted images using the Real-ESRGAN model for high-resolution output.
-  
-- **User Interaction via Telegram**:
-  - Users will interact with the bot by sending PDF files through Telegram. The bot will process the files and return enhanced images and text-to-speech results.
-- **Conversation Context with OpenAI**:
+### Upcoming Features: 
+- **Alleycat Event Bot**: A specialized bot is being developed to support the Alleycat event. The bot will manage user interactions, event details, and facilitate real-time communication and updates.
 
----
-
-### Technical Stack & Setup
-
-- **Python 3.9+**
-- **Django**
-- **Google Cloud Platform (GCP)**
-  I plan to use a Telegram bot integrated with Google Cloud Platform (GCP) to automatically manage server instances for the ESRGAN AI model. Users will be able to use the bot to start and stop the server, which will process high-resolution images using the ESRGAN model.
-- **Real-ESRGAN**
-- **Text-to-Speech (TTS)**
-- **Pyrogram**: Pyrogram is a framework written from the ground up that acts as a fully-fledged Telegram client based on the MTProto API.
-                        https://docs.pyrogram.org/
-                        https://docs.pyrogram.org/topics/mtproto-vs-botapi.html
-  
-- **OpenAI API**: Used for conversation management and quiz feedback.
-
----
-
-### Project Structure (Initial)
+## Project Structure
 
 ```plaintext
 learn-2-learn/
-│
-├── .github/workflows/            # CI/CD configuration for deployment
-│   └── deploy.yml
-│
-├── ai_kitchen/                   # Folder for AI models
-│   ├── esrgan_model_processor.py # ESRGAN model for image enhancement
-│   ├── tools.py                  # Tools for text extraction from PDFs
-│
-├── project/                      
-│   ├── settings.py               
-│   ├── urls.py                   
-│
-├── telegram_bot/                 # Main logic for the Telegram bot
-│   ├── bot.py                    # Bot logic, including OpenAI integration
-│   ├── gcs_auth.py               # Google Cloud Storage authentication
-│   ├── telegram_config.py        # Configuration for the Telegram bot
-│
-├── Dockerfile                    
-├── docker-compose.yml            # Docker Compose for local development
-├── pyproject.toml                # Poetry project configuration
-├── README.md                     
+├── .github/             # GitHub Actions CI/CD workflows
+├── fastapi_app/         # FastAPI application folder
+├── telegram_bot/        # Telegram bot logic and handlers
+├── Dockerfile           # Docker configuration for containerization
+├── docker-compose.yml   # Docker Compose file to run the services
+├── pyproject.toml       # Poetry configuration for managing dependencies
+├── Redis/               # Redis cache setup
+├── main.py              # Entry point for the application
+└── README.md            # Project documentation (this file)
 ```
 
----
+## How to Run
 
-### Current Status
+### Using Docker Compose:
 
-This project is still in the **early stages of development**. The focus is currently on:
-- Extracting text and images from PDF files.
-- Setting up basic bot communication through Telegram.
-- Initial integration of **Real-ESRGAN** for image enhancement and **OpenAI** for conversation management.
+To run the application locally using Docker Compose, execute the following commands:
 
----
+```bash
+# Clone the repository
+git clone <repository-url>
 
-### Installation
+# Navigate to the project folder
+cd learn-2-learn
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/learn-2-learn.git
-   cd learn-2-learn
-   ```
+# Build and run the services (FastAPI, Redis, etc.)
+docker-compose up --build
+```
 
-2. **Set up environment variables**:
-   - Create a `.env` file with the necessary API keys for Telegram, OpenAI, and Google Cloud Platform:
-     ```plaintext
-     TELEGRAM_API_ID=telegram_api_id
-     TELEGRAM_API_HASH=telegram_api_hash
-     TELEGRAM_BOT_TOKEN=telegram_bot_token
-     OPENAI_API_KEY=openai_api_key
-     GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json
-     ```
+This will launch the FastAPI app, Redis, and other necessary services.
 
-3. **Build and run the project with Docker**:
-   - For local development, you can use Docker:
-     ```bash
-     docker-compose up --build
-     ```
+### Running Tests
 
----
+Tests are included for various parts of the system. To run the tests:
 
-### Next Steps
+```bash
+# Using Poetry
+poetry run pytest
+```
 
-1. **Development**:
-   - Continue developing the core features for text and image extraction from PDFs.
-   - Implement OpenAI or Transformers integration to provide dynamic quiz questions and feedback.
-   - Work on integrating the Text-to-Speech feature.
+## Environment Variables
 
-2. **Testing**:
-   - Add unit tests to verify the correctness of text and image extraction, as well as the bot’s interaction with users.
-   - Perform integration tests to ensure smooth communication between the bot, OpenAI, and Google Cloud services.
+Make sure to set the following environment variables in your `.env` file:
 
-3. **Refinements**:
-   - Focus on improving performance and adding asynchronous handling for large PDFs and images.
-   - Securely manage API keys and credentials, particularly for production environments.
+```plaintext
+TELEGRAM_TOKEN=<your-telegram-bot-token>
+POSTGRES_DB=<your-database>
+POSTGRES_USER=<your-user>
+POSTGRES_PASSWORD=<your-password>
+```
 
----
+## Future Plans
 
-### Goals
+- **Kubernetes Deployment**: The system will be migrated to Kubernetes to enable scaling.
+- **Monitoring**: Integration with Prometheus and Grafana for real-time monitoring and analytics.
+- **Alleycat Bot Development**: The next stage involves building a bot to manage the Alleycat event, ensuring smooth operation and interaction with participants.
 
-The main objective of this project is to build a **showcase for my portfolio**, demonstrating my skills in:
-- Developing Python-based applications.
-- Integrating external APIs (Telegram, OpenAI, Google Cloud).
-- Using Docker for containerized development.
-- Leveraging machine learning models such as **Real-ESRGAN** for image enhancement.
+## Contributing
 
-This project will evolve as I continue learning and adding new features.
+Feel free to contribute to this project by submitting pull requests or reporting issues.
+
+## License
+
+This project is licensed under the MIT License.
