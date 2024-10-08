@@ -47,7 +47,8 @@
             
         - name: Print project structure
           run: |
-            docker run -it ghcr.io/sz0gun/learn-2-learn:latest find /app
+            docker run ghcr.io/sz0gun/learn-2-learn:latest sh -c "find /app"
+
 
 
         - name: Authenticate to Google Cloud with JSON key

@@ -15,15 +15,16 @@ RUN apt-get update && apt-get install -y \
 RUN pip install --upgrade pip && \
     pip install poetry
 
-# Update dependencies
-COPY pyproject.toml poetry.lock /app/
+# Set the working directory inside the container
 WORKDIR /app
-RUN poetry update  # This updates all dependencies to their latest versions
+
+# Copy only the dependency files first to leverage Docker cache
+COPY pyproject.toml poetry.lock /app/
 
 # Install dependencies using Poetry
-RUN poetry install --sync --no-root
+RUN poetry install --no-root
 
-# Copy the rest of your application code into the container
+# Now copy the rest of your application code into the container
 COPY . /app/
 
 # Expose the application port (for FastAPI)
