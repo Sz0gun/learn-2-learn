@@ -25,7 +25,7 @@ def healthcheck(url="http://localhost:8000/healthcheck"):
             return 1
     except Exception as e:
         # Handle exceptions, informing about the error during the request execution
-        print(f"Healthcheck failed: {str(e)}")
+        print(f"Healthcheck faailed: {str(e)}")
         return 1
     
 if __name__ == "__main__":
