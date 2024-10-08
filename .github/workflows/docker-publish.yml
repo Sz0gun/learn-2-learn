@@ -1,108 +1,99 @@
-name: Build, Test, and Push Docker Image
+  name: Build, Test, and Push Docker Image
 
-on:
-  push:
-    branches: [main, integracja-fastapi-redis]
+  on:
+    push:
+      branches: [main, integracja-fastapi-redis]
+      
+  env:
+    GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        
+  jobs:
+    build-and-push:
+      runs-on: ubuntu-latest
+      
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+        
+        - name: Pre-build Docker cleanup
+          run: docker system prune -a --volumes -f
+        
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v2
+        
+        # Build Docker image and tag it
+        - name: Build Docker image
+          uses: docker/build-push-action@v4
+          with:
+            context: .
+            push: false
+            tags: |
+              ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
+              ghcr.io/sz0gun/learn-2-learn:latest
+          
+        - name: Login to GitHub Container Registry using GHCR_PAT
+          uses: docker/login-action@v2
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GIT_TOKEN }}
 
-env:
-  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        - name: Validate GCP Project ID
+          run: |
+            if [[ ! "$GCP_PROJECT_ID" =~ ^[a-z][-a-z0-9]{4,28}[a-z0-9]$ ]]; then
+              echo "Invalid GCP Project ID"
+              exit 1
+            fi
 
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
+        - name: Authenticate to Google Cloud with JSON key
+          uses: google-github-actions/auth@v1
+          with:
+            credentials_json: ${{ secrets.GCS_CREDENTIALS }}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+        - name: Set up Cloud SDK
+          uses: google-github-actions/setup-gcloud@v1
+          with:
+            project_id: ${{ env.GCP_PROJECT_ID }}
 
-      # Set up cache for Poetry dependencies
-      - name: Cache Poetry dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/pypoetry
-            ~/.cache/pip
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock')}}
-          restore-keys: |
-            ${{ runner.os }}-poetry-
+        # Create Docker network
+        - name: Create Docker network
+          run: docker network create app-network
 
-      # Install dependencies only if need
-      - name: Install dependencies
-        run: poetry install --no-root
 
-      - name: Pre-build Docker cleanup
-        run: docker system prune -a --volumes -f
+        # Start Redis for integration with FastAPI
+        - name: Start Redis container
+          run: |
+            docker run -d --name redis-container --network app-network -p 6379:6379 redis:alpine
 
-      - name: Validate GCP Project ID
-        run: |
-          if [[ ! "$GCP_PROJECT_ID" =~ ^[a-z][-a-z0-9]{4,28}[a-z0-9]$ ]]; then
-            echo "Invalid GCP Project ID"
-            exit 1
-          fi
 
-      - name: Authenticate to Google Cloud with JSON key
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCS_CREDENTIALS }}
+        # Run healthcheck (Sanity Check)
+        - name: Run healthcheck (Sanity Check)
+          run: |
+            docker run -d --name test-container -e REDIS_HOST=redis --network app-network -p 8000:8000 ghcr.io/sz0gun/learn-2-learn:latest
+            sleep 90
+            docker exec test-container python scripts/healthcheck.py || { echo "Sanity check failed"; docker logs test-container; exit 1; }
+            docker stop test-container
+            docker rm test-container
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: ${{ env.GCP_PROJECT_ID }}
+        # Run full tests inside Docker container
+        - name: Run full test suite
+          run: |
+            docker run --name test-container ghcr.io/sz0gun/learn-2-learn:latest pytest tests/
+            docker stop test-container
+            docker rm test-container
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        # Push Docker image to GHCR if tests succeed
+        - name: Push Docker image to GHCR
+          if: ${{ success() }}
+          uses: docker/build-push-action@v4
+          with:
+            context: .
+            push: true
+            tags: |
+              ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
+              ghcr.io/sz0gun/learn-2-learn:latest
 
-      - name: Login to GitHub Container Registry using GHCR_PAT
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GIT_TOKEN }}
-
-      # Start Redis for integration with FastAPI
-      - name: Start Redis container
-        run: |
-          docker run -d --name redis-container -p 6379:6379 redis:alpine
-
-      # Build Docker image and tag it
-      - name: Build Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: false
-          tags: |
-            ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
-            ghcr.io/sz0gun/learn-2-learn:latest
-
-      # Run healthcheck (Sanity Check)
-      - name: Run healthcheck (Sanity Check)
-        run: |
-          docker run -d --name test-container -e REDIS_HOST=redis -p 8000:8000 --link redis-container:redis ghcr.io/sz0gun/learn-2-learn:latest
-          sleep 90
-          poetry run python scripts/healthcheck.py || { echo "Sanity check failed"; docker logs test-container; exit 1; }
-          docker stop test-container
-          docker rm test-container
-
-      # Run full tests inside Docker container
-      - name: Run full test suite
-        run: |
-          docker run --name test-container ghcr.io/sz0gun/learn-2-learn:latest pytest tests/
-          docker stop test-container
-          docker rm test-container
-
-      # Push Docker image to GHCR if tests succeed
-      - name: Push Docker image to GHCR
-        if: ${{ success() }}
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: |
-            ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
-            ghcr.io/sz0gun/learn-2-learn:latest
-
-      # Clean up Docker resources
-      - name: Clean up Docker resources
-        if: always()
-        run: docker system prune -f
+        # Clean up Docker resources
+        - name: Clean up Docker resources
+          if: always()
+          run: docker system prune -f
