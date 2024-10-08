@@ -27,6 +27,7 @@ jobs:
         with:
           context: .
           push: false
+          load: true
           tags: |
             ghcr.io/sz0gun/learn-2-learn:${{ github.sha }}
             ghcr.io/sz0gun/learn-2-learn:v1.0.0
