@@ -9,8 +9,8 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update && apt-get install -y \
     git \
     curl \
-    && rm -rf /var/lib/apt/lists/*
-
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
@@ -32,6 +32,9 @@ COPY . /app/
 
 # Expose the application port (for FastAPI)
 EXPOSE 8000
+
+# Run tests before starting the application
+RUN poetry run pytest
 
 # Command to run your FastAPI application
 CMD ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
