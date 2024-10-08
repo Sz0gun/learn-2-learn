@@ -21,7 +21,7 @@ WORKDIR /app
 RUN poetry update  # This updates all dependencies to their latest versions
 
 # Install dependencies using Poetry
-RUN poetry install --no-root
+RUN poetry install --sync --no-root
 
 # Copy the rest of your application code into the container
 COPY . /app/
