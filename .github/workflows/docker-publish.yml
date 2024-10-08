@@ -45,10 +45,6 @@ jobs:
             exit 1
           fi
           
-      - name: Print project structure
-        run: |
-          docker run ghcr.io/sz0gun/learn-2-learn:latest sh -c "find /app"
-
       - name: Authenticate to Google Cloud with JSON key
         uses: google-github-actions/auth@v1
         with:
