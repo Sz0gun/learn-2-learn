@@ -1,19 +1,23 @@
 [tool.poetry]
-name = "learn-2-learn"
-version = "0.1.0"
-description = "Project for processing images and text using Real-ESRGAN and PyTorch"
-authors = ["Maksym Viunov <mks.viunov@gmail.com>"]
-readme = "README.md"
-license = "MIT"
+name = "learn-2-learn"  # The name of the project
+version = "0.1.0"  # The current version of the project
+description = "Project for integrating FastAPI with Django and managing chatbot workflows."  # Updated project description
+authors = ["Maksym Viunov <mks.viunov@gmail.com>"]  # List of authors
+readme = "README.md"  # Path to the README file
+license = "MIT"  # License type
+
+# Specify packages as an array
+packages = [
+    { include = "fastapi_app" },
+    { include = "project" },
+    { include = "telegram_bot" }
+]
 
 # Dependencies
 [tool.poetry.dependencies]
-python = "^3.11"
-django = ">=4.2.2, <5.0"
+python = "^3.9"
 djangorestframework = ">=3.14.0, <4.0"
 fastapi = ">=0.115.0, <0.116.0"
-numpy = ">=1.23.0, <2.0"
-torch = ">=2.0.0, <3.0"
 opencv-python = ">=4.7.0, <5.0"
 whitenoise = ">=6.0.0, <7.0"
 uvicorn = ">=0.31.0, <0.32.0"
@@ -22,14 +26,12 @@ redis = ">=5.0, <6.0"
 httpx = "^0.27.2"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.3"
 pytest-asyncio = "^0.24.0"
-fastapi = {extras = ["test"], version = "^0.115.0"}
 
 # Optional dependencies for extra features
 [tool.poetry.extras]
 torch_deps = ["torch", "torchvision"]
-image_processing = ["basicsr", "facexlib", "gfpgan", "pdf2image", "poppler-utils"]
+image_processing = ["basicsr", "facexlib", "gfpgan", "pdf2image"]
 google_cloud = ["google-cloud-storage"]
 
 # Formatting and linting tools
@@ -37,35 +39,16 @@ google_cloud = ["google-cloud-storage"]
 line-length = 88
 include = '\.pyi?$'
 target-version = ['py311']
-extend-exclude = '''
-/(
-  # Directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
 
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-ensure_newline_before_comments = true
-line_length = 88
 
 # Mypy configuration
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
-ignore_missing_imports = true
 
 # Build configuration
 [build-system]
@@ -75,4 +58,3 @@ build-backend = "poetry.core.masonry.api"
 # Pytest options for async testing
 [tool.pytest.ini_options]
 asyncio_mode = "strict"
-asyncio_default_fixture_loop_scope = "function"

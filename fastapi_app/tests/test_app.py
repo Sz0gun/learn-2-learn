@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
-from main import app, get_redis
+from fapi_main import app, get_redis
 from unittest.mock import AsyncMock
 from redis.exceptions import RedisError
 
