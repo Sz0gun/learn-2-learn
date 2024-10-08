@@ -67,7 +67,7 @@ jobs:
       # Run healthcheck (Sanity Check)
       - name: Run healthcheck (Sanity Check)
         run: |
-          docker run -d --name test-container --rm -e REDIS_HOST=redis --network app-network -p 8000:8000 ghcr.io/sz0gun/learn-2-learn:latest
+          docker run -d --name test-container --rm -e REDIS_HOST=redis --network app-network -p 8000:8000 ghcr.io/sz0gun/learn-2-learn:v1.0.0
           sleep 90
           docker exec test-container python scripts/healthcheck.py || { echo "Sanity check failed"; docker logs test-container; exit 1; }
 
