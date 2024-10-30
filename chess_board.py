@@ -8,7 +8,6 @@ import asyncio
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 
 # Load environment variables
 load_dotenv()
@@ -24,13 +23,10 @@ logger = logging.getLogger(__name__)
 
 # FastAPI app setup
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def serve_chess():
-    with open("static/chess_index.html") as f:
-        html_content = f.read()
-    return HTMLResponse(content=html_content, status_code=200)
+    return HTMLResponse(content="<h1>Welcome to the Chess Game!</h1><p>Game is currently under construction.</p>", status_code=200)
 
 # Chat environments
 environment_white_ai_chat = []
@@ -39,7 +35,7 @@ shared_chat = []
 
 # Start command - initiates the chess game and presents the user with the option to start using WebApp.
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    web_app_url = "https://<your_github_hosted_domain>/static/chess_index.html"  # Update with the HTTPS URL hosted on GitHub
+    web_app_url = "https://szogun.github.io/learn-2-learn/chess_index.html"  # Update with the HTTPS URL hosted on GitHub Pages
     keyboard = [
         [InlineKeyboardButton("Start Chess Game", web_app=WebAppInfo(url=web_app_url))]
     ]
