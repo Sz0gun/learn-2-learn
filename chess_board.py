@@ -4,20 +4,36 @@ from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandle
 import chess
 import chess.svg
 import os
-import asyncio
 from dotenv import load_dotenv
-
-load_dotenv()
-
 import cairosvg
+import nest_asyncio
+import asyncio
+import uvicorn
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+
+# Load environment variables
+load_dotenv()
 
 TELEGRAM_API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
 
 if TELEGRAM_API_TOKEN is None:
     raise ValueError("No TELEGRAM_API_TOKEN provided")
+
 # Setting up logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# FastAPI app setup
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_chess():
+    with open("static/chess_index.html") as f:
+        html_content = f.read()
+    return HTMLResponse(content=html_content, status_code=200)
 
 # Initialize chess board
 game_board = chess.Board()
@@ -28,13 +44,13 @@ environment_black_ai_chat = []
 shared_chat = []
 
 # Start command - initiates the chess game and presents the user with the option to start using WebApp.
-def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    web_app_url = "https://github.com/Sz0gun/learn-2-learn.git"  # Using GitHub to host the HTML5 chess game
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    web_app_url = "https://Sz0gun.github.io/chess_index.html"  # Update with the HTTPS URL hosted on GitHub
     keyboard = [
         [InlineKeyboardButton("Start Chess Game", web_app=WebAppInfo(url=web_app_url))]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('Hi! Ready for a game of chess?', reply_markup=reply_markup)
+    await update.message.reply_text('Hi! Ready for a game of chess?', reply_markup=reply_markup)
 
 # Button click handler for starting game - handles the button click event to start the game.
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -90,7 +106,6 @@ async def chat_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         shared_chat.append(f"{user_name}: {user_message}")
         await update.message.reply_text(f"(Shared Chat) {user_name}: {user_message}")
 
-
 # Command to switch chat environment - allows the user to change between different chat environments.
 async def set_chat_environment(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     environment = ' '.join(context.args).lower()
@@ -108,7 +123,7 @@ async def set_chat_environment(update: Update, context: ContextTypes.DEFAULT_TYP
 
 # Main function to add handlers and run the bot - sets up command handlers and starts the bot.
 async def main() -> None:
-    application = ApplicationBuilder().token("TELEGRAM_API_TOKEN").build()
+    application = ApplicationBuilder().token(TELEGRAM_API_TOKEN).build()
     
     # Command handler to start the game
     application.add_handler(CommandHandler('start', start))
@@ -121,29 +136,24 @@ async def main() -> None:
     # Message handler to handle chat messages in different environments
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, chat_handler))
     
+    # Ensure the event loop can be nested
+    nest_asyncio.apply()
+    
     # Start polling to interact with Telegram
     await application.run_polling()
 
-# Run the main function in the current event loop
-if __name__ == '__main__':
+# Run FastAPI server
+if __name__ == "__main__":
     try:
         loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.get_event_loop()
-        asyncio.set_event_loop(loop)
-        
-    loop.run_until_complete(main())
-    # Placeholder for additional functionality or handlers if needed in the future.
-# Note:
-# The `logging` module is part of Python's standard library, so no additional dependency is required for this.
-# To render SVG images of the chess board as PNG for Telegram, we use `cairosvg`.
-# You can add `cairosvg` to your dependencies with Poetry using:
-#   `poetry add cairosvg`
-# Dependencies to add:
-# - `python-telegram-bot`: Required to interact with Telegram's Bot API.
-# - `python-chess`: Required for handling chess logic.
-# - `cairosvg`: Used for rendering SVG images of the chess board to PNG.
+    except RuntimeError:  # No running event loop
+        loop = None
 
-# If you are experiencing issues with Pylance not resolving imports such as `telegram`, ensure you have installed `python-telegram-bot` using:
-#   `poetry add python-telegram-bot`
-# Also, make sure your Python environment in VSCode matches the environment in which dependencies are installed.
+    if loop and loop.is_running():
+        print('Async event loop already running. Using existing event loop.')
+        loop.create_task(main())  # Use the existing event loop
+    else:
+        # Start FastAPI server in a separate task
+        loop = asyncio.get_event_loop()
+        loop.create_task(main())
+        uvicorn.run(app, host="0.0.0.0", port=8000)
