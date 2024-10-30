@@ -1,60 +1,35 @@
 [tool.poetry]
-name = "learn-2-learn"  # The name of the project
-version = "0.1.0"  # The current version of the project
-description = "Project for integrating FastAPI with Django and managing chatbot workflows."  # Updated project description
-authors = ["Maksym Viunov <mks.viunov@gmail.com>"]  # List of authors
-readme = "README.md"  # Path to the README file
-license = "MIT"  # License type
+name = "my_project"
+version = "0.1.0"
+description = "Project for integrating FastAPI with Django and managing chatbot workflows."
+authors = ["Maks Beaver <maksymviunov@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+package-mode = false
 
-# Specify packages as an array
+# Define packages as an array
 packages = [
-    { include = "fastapi_app" },
-    { include = "project" },
-    { include = "telegram_bot" }
+  { include = "backend" },
+  { include = "backend.django.ai_kitchen" },
+
 ]
 
-# Dependencies
 [tool.poetry.dependencies]
-python = "^3.9"
-djangorestframework = ">=3.14.0, <4.0"
-fastapi = ">=0.115.0, <0.116.0"
-opencv-python = ">=4.7.0, <5.0"
-whitenoise = ">=6.0.0, <7.0"
-uvicorn = ">=0.31.0, <0.32.0"
-psycopg2-binary = ">=2.9.0, <3.0"
-redis = ">=5.0, <6.0"
-httpx = "^0.27.2"
+python = "^3.10.5"
+toml = "^0.10.2"
+python-telegram-bot = "^21.6"
+python-chess = "^1.999"
+cairosvg = "^2.7.1"
+nest-asyncio = "^1.6.0"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
+black = "^23.3.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest-asyncio = "^0.24.0"
+ipykernel = "^6.29.5"
 
-# Optional dependencies for extra features
-[tool.poetry.extras]
-torch_deps = ["torch", "torchvision"]
-image_processing = ["basicsr", "facexlib", "gfpgan", "pdf2image"]
-google_cloud = ["google-cloud-storage"]
-
-# Formatting and linting tools
-[tool.black]
-line-length = 88
-include = '\.pyi?$'
-target-version = ['py311']
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-
-# Mypy configuration
-[tool.mypy]
-python_version = "3.9"
-warn_return_any = true
-warn_unused_configs = true
-
-# Build configuration
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-# Pytest options for async testing
-[tool.pytest.ini_options]
-asyncio_mode = "strict"
