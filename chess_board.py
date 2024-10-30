@@ -1,11 +1,8 @@
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes, MessageHandler, filters
-import chess
-import chess.svg
 import os
 from dotenv import load_dotenv
-import cairosvg
 import nest_asyncio
 import asyncio
 import uvicorn
@@ -35,9 +32,6 @@ async def serve_chess():
         html_content = f.read()
     return HTMLResponse(content=html_content, status_code=200)
 
-# Initialize chess board
-game_board = chess.Board()
-
 # Chat environments
 environment_white_ai_chat = []
 environment_black_ai_chat = []
@@ -45,7 +39,7 @@ shared_chat = []
 
 # Start command - initiates the chess game and presents the user with the option to start using WebApp.
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    web_app_url = "https://Sz0gun.github.io/chess_index.html"  # Update with the HTTPS URL hosted on GitHub
+    web_app_url = "https://<your_github_hosted_domain>/static/chess_index.html"  # Update with the HTTPS URL hosted on GitHub
     keyboard = [
         [InlineKeyboardButton("Start Chess Game", web_app=WebAppInfo(url=web_app_url))]
     ]
@@ -59,36 +53,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     
     if query.data == 'start_game':
         # Show initial board state once the game is started
-        await send_board_state(query)
-
-# Function to get the current board state in SVG format and convert it to PNG for display in Telegram.
-def get_board_image() -> str:
-    svg_data = chess.svg.board(game_board)
-    cairosvg.svg2png(bytestring=svg_data, write_to="current_board.png")
-    return "current_board.png"
-
-# Function to send the current board state - displays the board state as an image.
-async def send_board_state(query):
-    # Note: Now, the board state is displayed as an image using Telegram's send_photo method.
-    board_image_path = get_board_image()
-    await query.message.reply_photo(photo=open(board_image_path, 'rb'), caption=f"Your move, {query.from_user.first_name}!")
-
-# Handle chess moves submitted by users via command - takes a user's move, validates it, and updates the board.
-async def move(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    user_move = ' '.join(context.args)
-    try:
-        # Convert the user's input to a chess move
-        move = chess.Move.from_uci(user_move)
-        # Check if the move is legal in the current board state
-        if move in game_board.legal_moves:
-            game_board.push(move)  # Make the move on the board
-            await update.message.reply_text(f"Move {user_move} has been made.")
-            # Update the board state after the move
-            await send_board_state(update.message)
-        else:
-            await update.message.reply_text("Illegal move. Try again.")
-    except ValueError:
-        await update.message.reply_text("Invalid move format. Use UCI format, e.g., e2e4.")
+        await update.message.reply_text("Game started! Use /move to make your move.")
 
 # Handle chat messages for different environments - supports different chat environments (White AI, Black AI, Shared).
 async def chat_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -129,8 +94,6 @@ async def main() -> None:
     application.add_handler(CommandHandler('start', start))
     # Callback handler for buttons (e.g., start game button)
     application.add_handler(CallbackQueryHandler(button_handler))
-    # Command handler to handle moves
-    application.add_handler(CommandHandler('move', move))
     # Command handler to set chat environment
     application.add_handler(CommandHandler('set_chat', set_chat_environment))
     # Message handler to handle chat messages in different environments
