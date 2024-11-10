@@ -1,0 +1,1 @@
+# Entry point script for the training container

@@ -1,27 +1,10 @@
-# Contributing to Learn-2-Learn
+# Contributing
 
-Dziękujemy za zainteresowanie współpracą! Prosimy o zapoznanie się z poniższymi wytycznymi przed rozpoczęciem.
+We welcome contributions to the **m0dern** project! Below are some guidelines to help you get started.
 
-## **Zasady**
+## How to Contribute
 
-1. **Forkuj Repozytorium**
-   - Stwórz własne repozytorium z aktualnym kodem.
-
-2. **Twórz Gałąź**
-   - Stwórz nową gałąź (`feature/nazwa-funkcjonalnosci`).
-
-3. **Wprowadź Zmiany**
-   - Zapewnij, że zmiany są dobrze opisane i przetestowane.
-
-4. **Zgłoś Pull Request**
-   - Opisz zmiany i dlaczego są potrzebne.
-
-## **Zgłaszanie Błędów**
-
-- Upewnij się, że błędy nie zostały już zgłoszone.
-- Opisz problem szczegółowo, załącz kroki do odtworzenia oraz oczekiwane rezultaty.
-
-## **Styl Kodu**
-
-- Zachowuj spójny styl kodowania zgodny z projektem.
-- Używaj linters i formatterów przed commitowaniem.
+1. **Fork the repository** to your GitLab account.
+2. **Create a new branch** for your feature or bug fix:
+   ```bash
+   git checkout -b feature/your-feature
