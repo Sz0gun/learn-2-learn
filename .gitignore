@@ -1,9 +1,47 @@
+# Pliki środowiskowe
 .env
-*.sqlite3
+.env.test
+.env.local
+.env.*.local
+
+# Pliki kluczy i sekretów
 gsc_key.json
+.secrets/
+
+# Pliki Python
 *.pyc
 __pycache__/
+*.pyo
+*.pyd
 *.egg-info/
-.secrets
-*.md
-*.ipynb
+dist/
+build/
+*.egg
+
+# Środowiska wirtualne
+.venv/
+venv/
+ENV/
+env/
+ENV.bak/
+env.bak/
+
+# Testy i pokrycie kodu
+.pytest_cache/
+coverage/
+
+# Logi
+*.log
+
+# Pliki systemowe
+.DS_Store
+Thumbs.db
+
+# Konfiguracje IDE
+.vscode/
+
+# Notebooks
+*.ipynb_checkpoints/
+
+# Inne
+*.sqlite3

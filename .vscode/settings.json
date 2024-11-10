@@ -1,7 +1,6 @@
 {
-    "python.analysis.extraPaths": [
-      "./fastapi_app"
-    ],
-    "commentTranslate.source": "Copilot"
-  }
-  
+  "python.analysis.extraPaths": [
+    "./backend/fast_api"
+  ],
+  "commentTranslate.source": "Copilot"
+}
