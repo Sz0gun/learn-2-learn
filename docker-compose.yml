@@ -1,0 +1,29 @@
+services:
+  django:
+    container_name: django
+    build:
+      context: ./dj_rest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./dj_rest:/app
+    env_file:
+      - .env
+
+  fastapi:
+    container_name: fastapi
+    build:
+      context: ./tg
+    command: uvicorn tg.fst_api:app --host 0.0.0.0 --port 8001 --reload
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./tg:/app
+    env_file:
+      - .env
+  
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+     - "6379:6379"

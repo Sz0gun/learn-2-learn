@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pytest
+redis
+pydantic-settings
+aioredis
+openai
+tensorflow>=2.10.0
