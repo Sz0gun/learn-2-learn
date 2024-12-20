@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+# dj_rest/manage.py
+
 import os
 import sys
 
@@ -9,8 +10,8 @@ def main():
         from django.core.management import execute_from_command_line
     except ImportError as exc:
         raise ImportError(
-            "Nie można zaimportować Django. Upewnij się, że jest zainstalowane i "
-            "dostępne w Twoim PYTHONPATH oraz że aktywowałeś środowisko wirtualne."
+                            "Cannot import Django. Please make sure it is installed and "
+                            "available in your PYTHONPATH and that you have activated the virtual environment."
         ) from exc
     execute_from_command_line(sys.argv)
 
