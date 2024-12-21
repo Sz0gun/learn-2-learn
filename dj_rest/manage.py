@@ -4,9 +4,12 @@ import sys
 def main():
     """Entry point for Django's manage.py."""
     # Ustawienie DJANGO_SETTINGS_MODULE na podstawie DJANGO_ENV
-    django_env = os.getenv('DJANGO_ENV', 'prod').lower()
+    django_env = os.getenv('DJANGO_ENV', 'dev').lower()
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'core.settings.{django_env}')
     
+    if os.environ.get('RUN_MAIN') != 'true':
+        print(f"Using Django environment: {django_env} (DJANGO_SETTINGS_MODULE: {os.environ['DJANGO_SETTINGS_MODULE']})")
+
     try:
         from django.core.management import execute_from_command_line
         execute_from_command_line(sys.argv)

@@ -7,7 +7,7 @@ class VaultKey(models.Model):
         help_text='A unique name for the Vault key.'
     )
     value = models.TextField(
-        help_text='Wartosc klucza Vault.'
+        help_text='Vault key value.'
     )
     created_at = models.DateTimeField(auto_now_add=True)
 

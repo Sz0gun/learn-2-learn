@@ -37,9 +37,14 @@ class Config(BaseSettings):
     PSQL_USER_PROD: str
     PSQL_PASSWORD_PROD: str
     OPENAI_API: str
+    VAULT_ADDR: str
+    VAULT_TOKEN: str
+    ELASTICSEARCH_HOST: str
+    ELASTICSEARCH_INDEX: str
 
     class Config:
         env_file = ENV_FILE_PATH
+        extra = "forbid" # Blocking additional variables
 
 # Singleton mechanism
 _config_instance = None
