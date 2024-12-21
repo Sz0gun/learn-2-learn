@@ -1,16 +1,23 @@
-#!/usr/bin/env python
 import os
 import sys
 
 def main():
-    """Główna funkcja zarządzania Django."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
+    # Default to 'dev' if DJANGO_ENV is not set
+    DJANGO_ENV = os.getenv('DJANGO_ENV', 'dev')
+
+    # Set the settings module dynamically
+    if DJANGO_ENV == 'prod':
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.prod')
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.dev')
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
         raise ImportError(
-            "Nie można zaimportować Django. Upewnij się, że jest zainstalowane i "
-            "dostępne w Twoim PYTHONPATH oraz że aktywowałeś środowisko wirtualne."
+            "Couldn't import Django. Are you sure it's installed and "
+            "available on your PYTHONPATH environment variable? Did you "
+            "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
 

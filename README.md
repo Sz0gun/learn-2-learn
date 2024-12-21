@@ -107,4 +107,4 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ### Contacts
 For any inquiries or issues, please contact:
-- **Project Maintainer**: Maksym (Telegram: @your_handle)
+- **Project Maintainer**: Beaver (Telegram: @b3av3r)
