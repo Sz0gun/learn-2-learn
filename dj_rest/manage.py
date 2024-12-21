@@ -3,7 +3,6 @@ import sys
 
 def main():
     """Entry point for Django's manage.py."""
-    # Ustawienie DJANGO_SETTINGS_MODULE na podstawie DJANGO_ENV
     django_env = os.getenv('DJANGO_ENV', 'dev').lower()
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'core.settings.{django_env}')
     
