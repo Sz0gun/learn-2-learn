@@ -18,19 +18,19 @@ class Check:
             
     def register_handlers(self):
         """
-        Rejestruje eventy obslugivane przez klienta Telegrama.
+        Records events handled by the Telegram client.
         """
         @self.client.on(events.NewMessage(pattern="/ping"))
         async def handle_ping(event):
             """
-            Obsluguje polecenie '/ping' w Telegramie.
+            Supports '/ping' command in Telegram.
             """
             response = await self.forward_to_telegram("ping")
-            await event.respond(f"Odpowiedz WS: {response}")
+            await event.respond(f"Reply WS: {response}")
         
         @self.client.on(events.NewMessage(pattern="/status"))
         async def handle_status(event):
             """
-            Obsluguje polecenie '/status' w Telegramie.
+            Supports '/status' command in Telegram.
             """
-            await event.respond("Bot jest gotowy do pracy!")
+            await event.respond("The bot is ready to work!")

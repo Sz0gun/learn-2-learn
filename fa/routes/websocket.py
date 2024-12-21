@@ -8,11 +8,11 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             # Odbieranie danych z Telegrama
             command = await websocket.receive_text()
-            print(f"Odebrano polecenie: {command}")
+            print(f"Command received: {command}")
 
             if command == "ping":
                 await websocket.send_text("Pong od WS")
             else:
-                await websocket.send_text(f"Nieznane polecenie: {command}")
+                await websocket.send_text(f"Unknown command: {command}")
     except WebSocketDisconnect:
-        print("Polaczenie Websocket zostalo zamkniete.")
+        print("The Websocket connection has been closed.")

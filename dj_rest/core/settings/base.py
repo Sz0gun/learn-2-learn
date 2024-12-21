@@ -1,11 +1,21 @@
 # dj_rest/core/settings/base.py
+
 from pathlib import Path
 from shared.settings import config
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+# from rest_fabric_control.utils import validate_vault_connection
+
+# # Check the connection with Vault
+# vault_client = validate_vault_connection()
+
+# # Download secrets
+# secrets = vault_client.secrets.kv.v2.read_secret_version(path='learn-2-learn')
+
+# SECRET_KEY = secrets['data']['data']['SECRET_KEY']
 
 SECRET_KEY = config.DJANGO_SECRET_KEY
 DEBUG = config.DJANGO_DEBUG
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 ALLOWED_HOSTS = config.ALLOWED_HOSTS
 
 INSTALLED_APPS = [
@@ -17,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'rest_fabric_control',
 ]
 
 MIDDLEWARE = [
@@ -57,3 +68,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+

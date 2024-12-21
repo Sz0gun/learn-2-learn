@@ -21,7 +21,10 @@ gunicorn==20.1.0  # WSGI server for Django
 alembic==1.8.1
 
 # Security and authentication
-djangorestframework-simplejwt==5.2.2  # JWT dla Django REST Framework
+djangorestframework-simplejwt==5.2.2 # JWT Django REST Framework
 
 pydantic-settings>=2.0
+hvac
+pip install elastic-apm
+pip install elasticsearch
 

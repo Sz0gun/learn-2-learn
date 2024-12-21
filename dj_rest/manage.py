@@ -2,24 +2,17 @@ import os
 import sys
 
 def main():
-    # Default to 'dev' if DJANGO_ENV is not set
-    DJANGO_ENV = os.getenv('DJANGO_ENV', 'dev')
-
-    # Set the settings module dynamically
-    if DJANGO_ENV == 'prod':
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.prod')
-    else:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.dev')
-
+    """Entry point for Django's manage.py."""
+    # Ustawienie DJANGO_SETTINGS_MODULE na podstawie DJANGO_ENV
+    django_env = os.getenv('DJANGO_ENV', 'prod').lower()
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'core.settings.{django_env}')
+    
     try:
         from django.core.management import execute_from_command_line
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable? Did you "
-            "forget to activate a virtual environment?"
-        ) from exc
-    execute_from_command_line(sys.argv)
+        execute_from_command_line(sys.argv)
+    except Exception as e:
+        print(f"Error starting Django: {e}")
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()

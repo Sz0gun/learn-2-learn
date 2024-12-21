@@ -11,17 +11,17 @@ class ImageGenerator:
 
     async def generate_image(self, prompt: str, user_id: int):
         """
-        Generuje obraz na podstawie opisu i wysyła go bezpośrednio do użytkownika w Telegramie.
+        It generates an image based on the description and sends it directly to the user on Telegram.
 
         Args:
-            prompt (str): Opis obrazu do wygenerowania.
-            user_id (int): ID użytkownika w Telegramie.
+            prompt (str): Description of the image to generate.
+            user_id (int): Telegram user ID.
 
         Returns:
             None
 
         Raises:
-            Exception: Jeśli generowanie obrazu nie powiedzie się.
+            Exception: If image generation fails.
         """
         try:
             response = openai.Image.create(
@@ -36,7 +36,7 @@ class ImageGenerator:
                 img_response = await client.get(image_url)
 
             # Wyslanie obrazu do uzytkownika w Telegramie
-            await self.client.send_file(user_id, img_response.content, caption=f"Obraz wygenerowany na podstawie: {prompt}")
+            await self.client.send_file(user_id, img_response.content, caption=f"Image generated from: {prompt}")
         
         except Exception as e:
-            raise Exception(f"Blad pod czas generowania obrazu: {str(e)}")
+            raise Exception(f"Error generating image: {str(e)}")
