@@ -1,6 +1,6 @@
 *.env
-*/__pycache__/
-szkic.py
+*.pyc
+__pycache__/
 vault.log
 *__init__.py
 */migrations/
