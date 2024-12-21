@@ -2,8 +2,6 @@
 from .base import *
 from shared.settings import config
 
-DEBUG = True
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

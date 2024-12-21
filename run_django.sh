@@ -1,17 +1,5 @@
 #!/bin/bash
 
-source .env
-
-# Vault Settings
-export VAULT_ADDR='http://127.0.0.1:8200'
-export VAULT_TOKEN='${VAULT_TOKEN}'
-VAULT_PORT=8200
-
-# Elasticsearch Settings
-export ELASTICSEARCH_HOST='http://localhost:9200'
-export ELASTICSEARCH_INDEX='django-logs'
-ELASTICSEARCH_PORT=9200
-
 # Add the project directory to PYTHONPATH using pwd
 PROJECT_DIR="$(pwd)"
 
@@ -21,6 +9,20 @@ if [[ ":$PYTHONPATH:" != *":$PROJECT_DIR:"* ]]; then
 else
     echo "$PROJECT_DIR is already in PYTHONPATH."
 fi
+
+source .env
+
+# Vault Settings
+export VAULT_ADDR="${VAULT_ADDR}"
+export VAULT_TOKEN="${VAULT_TOKEN}"
+VAULT_PORT=8200
+
+# Elasticsearch Settings
+export ELASTICSEARCH_HOST="${ELASTICSEARCH_HOST}"
+export ELASTICSEARCH_INDEX="${ELASTICSEARCH_INDEX}"
+ELASTICSEARCH_PORT=9200
+
+
 
 # Function to check port occupancy
 check_port_usage() {

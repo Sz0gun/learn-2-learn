@@ -1,5 +1,7 @@
-.env
-__pycache__
-szkic.py
+*.env
+*.pyc
+__pycache__/
 vault.log
-__init__.py
+*__init__.py
+*/migrations/
+*_initial.py
