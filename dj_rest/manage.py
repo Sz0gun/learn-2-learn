@@ -1,17 +1,23 @@
-# dj_rest/manage.py
-
 import os
 import sys
 
 def main():
-    """Główna funkcja zarządzania Django."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
+    # Default to 'dev' if DJANGO_ENV is not set
+    DJANGO_ENV = os.getenv('DJANGO_ENV', 'dev')
+
+    # Set the settings module dynamically
+    if DJANGO_ENV == 'prod':
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.prod')
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.dev')
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
         raise ImportError(
-                            "Cannot import Django. Please make sure it is installed and "
-                            "available in your PYTHONPATH and that you have activated the virtual environment."
+            "Couldn't import Django. Are you sure it's installed and "
+            "available on your PYTHONPATH environment variable? Did you "
+            "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
 

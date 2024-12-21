@@ -1,27 +1,27 @@
 # Django dependencies
 Django==4.1
-djangorestframework==3.14.0  # Główna biblioteka do tworzenia REST API w Django
-django-cors-headers==3.13.0  # Obsługa CORS dla dostępu API spoza domeny
+djangorestframework==3.14.0  # The main library for creating REST APIs in Django
+django-cors-headers==3.13.0  # CORS support for off-domain API access
 
 # FastAPI dependencies
 fastapi==0.95.1
-uvicorn==0.22.0  # Serwer ASGI dla aplikacji FastAPI
-fastapi-jwt-auth==0.6.2  # Obsługa JWT dla FastAPI (autoryzacja i bezpieczeństwo)
+uvicorn==0.22.0  # ASGI server for FastAPI applications
+fastapi-jwt-auth==0.6.2  # JWT support for FastAPI (authorization and security)
 
 # Telegram bot dependencies
-telethon==1.29.0  # Biblioteka do budowy bota Telegram
+telethon==1.29.0  # Library for building a Telegram bot
 
 # Database dependencies
-psycopg2-binary==2.9.5  # Obsługa PostgreSQL
-
-# Environment management
-python-dotenv==1.0.0  # Wczytywanie zmiennych środowiskowych z .env
+psycopg2-binary==2.9.5  # PostgreSQL support
 
 # ASGI server
-gunicorn==20.1.0  # Serwer WSGI dla Django
+gunicorn==20.1.0  # WSGI server for Django
 
 # Alembic for database migration (if SQLAlchemy is used with FastAPI)
 alembic==1.8.1
 
 # Security and authentication
 djangorestframework-simplejwt==5.2.2  # JWT dla Django REST Framework
+
+pydantic-settings>=2.0
+
