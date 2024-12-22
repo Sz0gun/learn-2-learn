@@ -177,3 +177,45 @@ Contributions are welcome! Please follow the standard GitHub workflow:
 For any inquiries or issues, please contact:
 - **Project Maintainer**: Beaver (Telegram: @b3av3r)
 
+
+
+### Plan wdrożenia Kubernetes i Ansible do zarządzania API w projekcie Learn-2-Learn
+
+---
+
+#### **1. Cele wdrożenia**
+- **Automatyzacja zarządzania API**: Użycie Kubernetes do orkiestracji aplikacji (Django, FastAPI) i Ansible do automatyzacji konfiguracji.
+- **Bezpieczeństwo**: Zarządzanie sekretami przy użyciu HashiCorp Vault z integracją Kubernetes.
+- **Elastyczność**: Dynamiczna konfiguracja i skalowanie aplikacji w różnych środowiskach (dev, prod).
+- **Centralizacja konfiguracji**: Stworzenie zunifikowanego mechanizmu zarządzania ustawieniami na poziomie całego projektu.
+
+---
+
+#### **2. Organizacja plików projektu**
+
+Utworzenie nowych folderów i plików w głównym katalogu projektu:
+
+```
+learn-2-learn/
+├── ansible/
+│   ├── README.md                # Dokumentacja playbooków Ansible
+│   ├── playbooks/
+│   │   ├── init_vault_secrets.yaml # Playbook do inicjalizacji sekretów Vault
+│   │   ├── deploy_k8s.yaml       # Playbook do wdrożenia Kubernetes
+│   │   ├── deploy_api.yaml       # Playbook do wdrożenia API
+│   │   ├── manage_secrets.yaml   # Playbook do zarządzania sekretami
+│   └── inventory/
+│       ├── hosts.yaml            # Inwentarz dla klastrów Kubernetes
+│
+├── k8s/
+│   ├── manifests/
+│   │   ├── django-deployment.yaml  # Deployment dla Django
+│   │   ├── fastapi-deployment.yaml # Deployment dla FastAPI
+│   │   ├── vault-secret.yaml       # Sekrety z Vault
+│   │   ├── ingress.yaml            # Ingress dla API
+│   │   ├── vault-secretprovider.yaml # Konfiguracja SecretProviderClass
+│   └── configmaps/
+│       ├── django-config.yaml
+│       ├── fastapi-config.yaml
+```
+
