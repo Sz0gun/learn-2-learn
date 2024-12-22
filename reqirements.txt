@@ -25,6 +25,6 @@ djangorestframework-simplejwt==5.2.2 # JWT Django REST Framework
 
 pydantic-settings>=2.0
 hvac
-pip install elastic-apm
-pip install elasticsearch
+elastic-apm
+elasticsearch
 

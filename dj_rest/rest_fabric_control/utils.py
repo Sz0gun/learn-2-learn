@@ -6,18 +6,19 @@ import hvac.exceptions
 
 class FabricControlUtils:
     def __init__(self):
+        # Logger for fallback logging
+        self.logger = logging.getLogger("django")
+
         # Vault configuration
         self.vault_host = os.getenv('VAULT_ADDR')
         self.vault_token = os.getenv('VAULT_TOKEN')
         self.vault_client = self._init_vault_client()
 
         # Elasticsearch configuration
-        self.elasticserach_host = os.getenv("ELASTICSEARCH_HOST")
-        self.elasticserach_index = os.getenv("ELASTICSEARCH_INDEX", 'django-logs')
-        self.elasticserach_client = self._init_elasticsearch_client()
+        self.elasticsearch_host = os.getenv("ELASTICSEARCH_HOST")
+        self.elasticsearch_index = os.getenv("ELASTICSEARCH_INDEX", 'django-logs')
+        self.elasticsearch_client = self._init_elasticsearch_client()
 
-        # Logger for fallback logging
-        self.logger = logging.getLogger("django")
 
     def _init_vault_client(self):
         """ Initialize Vault client."""
@@ -49,6 +50,7 @@ class FabricControlUtils:
             return secret['data']['data']
         except Exception as e:
             self.logger.error(f"Failed to retrieve secret from Vault: {e}")
+            raise
 
     def add_key_to_vault(self, path, key, value):
         """
