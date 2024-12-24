@@ -10,6 +10,7 @@ fastapi-jwt-auth==0.6.2  # JWT support for FastAPI (authorization and security)
 
 # Telegram bot dependencies
 telethon==1.29.0  # Library for building a Telegram bot
+pyrogram
 
 # Database dependencies
 psycopg2-binary==2.9.5  # PostgreSQL support
