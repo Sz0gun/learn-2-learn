@@ -27,4 +27,4 @@ pydantic-settings>=2.0
 hvac
 elastic-apm
 elasticsearch
-
+kubernetes
