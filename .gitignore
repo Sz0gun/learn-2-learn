@@ -5,3 +5,5 @@ vault.log
 *__init__.py
 */migrations/
 *_initial.py
+run_django.sh
+progress.md

@@ -2,7 +2,7 @@
 import os
 from django.core.asgi import get_asgi_application
 from fastapi.middleware.wsgi import WSGIMiddleware
-from fa import fst_app as fastapi_app
+from fst_on_demand import fst_app as fastapi_app
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.prod')
 

@@ -1,0 +1,17 @@
+- name: Deploy Kubernetes infrastructure
+  hosts: k8s
+  tasks:
+    - name: Apply Ingress
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', 'k8s/manifests/ingress.yaml') }}"
+
+    - name: Apply Vault configuration
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', 'k8s/manifests/vault-secret.yaml') }}"
+
+    - name: Apply Secret Provider Class
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('file', 'k8s/manifests/vault-secretprovider.yaml') }}"
