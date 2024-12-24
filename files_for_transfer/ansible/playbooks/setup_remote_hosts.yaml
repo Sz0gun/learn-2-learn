@@ -1,0 +1,41 @@
+
+- name: Configure remote hosts for Ansible
+  hosts: all
+  tasks:
+    - name: Create user on k8s-node-1
+      ansible.builtin.user:
+        name: user1
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+      when: inventory_hostname == "k8s-node-1"
+
+    - name: Create user on k8s-node-2
+      ansible.builtin.user:
+        name: user2
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+      when: inventory_hostname == "k8s-node-2"
+
+    - name: Create user on vault-node-1
+      ansible.builtin.user:
+        name: vault
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+      when: inventory_hostname == "vault-node-1"
+
+    - name: Copy SSH public key to remote hosts
+      ansible.builtin.copy:
+        src: ~/.ssh/id_rsa_ansible.pub
+        dest: /home/{{ ansible_user }}/.ssh/authorized_keys
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+
+    - name: Add user to sudoers
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers
+        line: '{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'

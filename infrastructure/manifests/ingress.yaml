@@ -21,13 +21,13 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: django-service
+            name: dj-service
             port:
               number: 8000
       - path: /fa
         pathType: Prefix
         backend:
           service:
-            name: fastapi-service
+            name: fa-service
             port:
               number: 8001
