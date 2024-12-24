@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fa-deploy
+  namespace: default
+  labels:
+    app: fst-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fst-app
+  template:
+    metadata:
+      labels:
+        app: fst-app
+    spec:
+      containers:
+      - name: l2l-fa
+        image: sz0gun/l2l-fa:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8001
+        envFrom:
+        - configMapRef:
+            name: fa-config

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dj-config
+  namespace: default
+data:
+    DJANGO_ENV: production

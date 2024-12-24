@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dj-deploy
+  namespace: default
+  labels:
+    app: dj-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dj-app
+  template:
+    metadata:
+      labels:
+        app: dj-app
+    spec:
+      containers:
+      - name: l2l-dj
+        image: sz0gun/l2l-dj:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8001
+        envFrom:
+        - configMapRef:
+            name: dj-config

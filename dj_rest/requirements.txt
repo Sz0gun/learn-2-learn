@@ -1,17 +1,8 @@
-# Django dependencies
 Django==4.1
-djangorestframework==3.14.0  # The main library for creating REST APIs in Django
-django-cors-headers==3.13.0  # CORS support for off-domain API access
-
-# ASGI server
-gunicorn==20.1.0  # WSGI server for Django
-
-# Telegram bot dependencies
-telethon==1.29.0  # Library for building a Telegram bot
+djangorestframework==3.14.0
+django-cors-headers==3.13.0
+gunicorn==20.1.0
+telethon==1.29.0
 pyrogram
-
-# Database dependencies
-psycopg2-binary==2.9.5  # PostgreSQL support
-
-# Security and authentication
-djangorestframework-simplejwt==5.2.2 # JWT Django REST Framework
+psycopg2-binary==2.9.5
+djangorestframework-simplejwt==5.2.2
