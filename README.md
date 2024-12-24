@@ -179,41 +179,41 @@ For any inquiries or issues, please contact:
 
 
 
-### Plan wdrożenia Kubernetes i Ansible do zarządzania API w projekcie Learn-2-Learn
+### Kubernetes and Ansible implementation plan for API management in the Learn-2-Learn project
 
 ---
 
-#### **1. Cele wdrożenia**
-- **Automatyzacja zarządzania API**: Użycie Kubernetes do orkiestracji aplikacji (Django, FastAPI) i Ansible do automatyzacji konfiguracji.
-- **Bezpieczeństwo**: Zarządzanie sekretami przy użyciu HashiCorp Vault z integracją Kubernetes.
-- **Elastyczność**: Dynamiczna konfiguracja i skalowanie aplikacji w różnych środowiskach (dev, prod).
-- **Centralizacja konfiguracji**: Stworzenie zunifikowanego mechanizmu zarządzania ustawieniami na poziomie całego projektu.
+#### **1. Implementation goals**
+-**API Management Automation**: Use Kubernetes for application orchestration (Django, FastAPI) and Ansible for configuration automation.
+-**Security**: Secrets management using HashiCorp Vault with Kubernetes integration.
+-**Flexibility**: Dynamic configuration and scaling of applications in different environments (dev, prod).
+-**Configuration centralization**: Creation of a unified mechanism for managing settings at the level of the entire project.
 
 ---
 
-#### **2. Organizacja plików projektu**
+#### **2. Organization of project files**
 
-Utworzenie nowych folderów i plików w głównym katalogu projektu:
+Creating new folders and files in the main project directory:
 
 ```
 learn-2-learn/
 ├── ansible/
-│   ├── README.md                # Dokumentacja playbooków Ansible
-│   ├── playbooks/
-│   │   ├── init_vault_secrets.yaml # Playbook do inicjalizacji sekretów Vault
-│   │   ├── deploy_k8s.yaml       # Playbook do wdrożenia Kubernetes
-│   │   ├── deploy_api.yaml       # Playbook do wdrożenia API
-│   │   ├── manage_secrets.yaml   # Playbook do zarządzania sekretami
-│   └── inventory/
-│       ├── hosts.yaml            # Inwentarz dla klastrów Kubernetes
+│ ├── README.md # Ansible playbook documentation
+│ ├── playbooks/
+│ │ ├── init_vault_secrets.yaml # Playbook for initializing Vault secrets
+│ │ ├── deploy_k8s.yaml # Kubernetes deployment playbook
+│ │ ├── deploy_api.yaml # API deployment playbook
+│ │ ├── manage_secrets.yaml # Playbook for managing secrets
+│ └── inventory/
+│ ├── hosts.yaml # Inventory for Kubernetes clusters
 │
 ├── k8s/
 │   ├── manifests/
-│   │   ├── django-deployment.yaml  # Deployment dla Django
-│   │   ├── fastapi-deployment.yaml # Deployment dla FastAPI
-│   │   ├── vault-secret.yaml       # Sekrety z Vault
-│   │   ├── ingress.yaml            # Ingress dla API
-│   │   ├── vault-secretprovider.yaml # Konfiguracja SecretProviderClass
+│   │   ├── django-deployment.yaml  # Deployment Django
+│   │   ├── fastapi-deployment.yaml # Deployment FastAPI
+│   │   ├── vault-secret.yaml       # Vault secrets
+│   │   ├── ingress.yaml            # Ingress API
+│   │   ├── vault-secretprovider.yaml # SecretProviderClass config
 │   └── configmaps/
 │       ├── django-config.yaml
 │       ├── fastapi-config.yaml
