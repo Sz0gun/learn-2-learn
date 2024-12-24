@@ -185,4 +185,3 @@ kubectl get svc -n ingress-nginx # external IP available now
 ```bash
 
 ```
-Utworzenie certyfikatów (Let's Encrypt)
