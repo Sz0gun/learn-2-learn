@@ -1,0 +1,11 @@
+# FastAPI dependencies
+fastapi==0.95.1
+uvicorn==0.22.0  # ASGI server for FastAPI applications
+fastapi-jwt-auth==0.6.2  # JWT support for FastAPI (authorization and security)
+
+# Telegram bot dependencies
+telethon==1.29.0  # Library for building a Telegram bot
+pyrogram
+
+# Alembic for database migration (if SQLAlchemy is used with FastAPI)
+alembic==1.8.1
