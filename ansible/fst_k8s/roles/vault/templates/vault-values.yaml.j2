@@ -1,0 +1,26 @@
+global:
+  enabled: true
+  tlsDisable: false
+
+server:
+  dataStorage:
+    enabled: true
+    storageClass: {{ storage_class | default('standard') }}
+    size: {{ storage_size | default('10Gi') }}
+
+ui:
+  enabled: true
+
+auditStorage:
+  enabled: true
+
+agentInject:
+  enabled: true
+
+ha:
+  enabled: true
+  replicas: {{ vault_replicas | default(3) }}
+  raft:
+    enabled: true
+    storageClass: {{ storage_class | default('standard') }}
+    size: {{ raft_storage_size | default('10Gi') }}

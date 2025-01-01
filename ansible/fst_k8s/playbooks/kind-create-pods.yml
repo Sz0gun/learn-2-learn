@@ -1,0 +1,42 @@
+- name: Create Consul and Vault Pods in Kubernetes
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Install SSH on control-plane node
+      hosts: l2l-cluster-control-plane
+      become: true
+      tasks:
+        - name: Update apt cache
+          ansible.builtin.apt:
+            update_cache: yes
+
+        - name: Install OpenSSH Server
+          ansible.builtin.apt:
+            name: openssh-server
+            state: present
+
+        - name: Ensure SSH service is running
+          ansible.builtin.service:
+            name: ssh
+            state: started
+            enabled: true
+
+    - name: Apply Consul Deployment
+      shell: |
+        kubectl apply -f infrastructure/manifests/deployments/consul.yml
+
+    - name: Apply Vault Deployment
+      shell: |
+        kubectl apply -f infrastructure/manifests/deployments/vault.yml
+
+    - name: Apply Vault Role and RoleBinding
+      shell: |
+        kubectl apply -f infrastructure/manifests/roles/vault.yml  # Apply RBAC rules for Vault
+
+    - name: Verify Consul Pod is Running
+      shell: |
+        kubectl rollout status deployment/consul -n default
+
+    - name: Verify Vault Pod is Running
+      shell: |
+        kubectl rollout status deployment/vault -n default
