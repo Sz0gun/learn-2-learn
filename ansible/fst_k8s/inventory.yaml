@@ -1,0 +1,13 @@
+all:
+  children:
+    k8s:
+      hosts:
+        l2l-control-plane:
+          ansible_host: 172.18.0.2
+        l2l-worker:
+          ansible_host: 172.18.0.4
+        l2l-worker2:
+          ansible_host: 172.18.0.3
+      vars:
+        ansible_user: m0dern
+        ansible_ssh_private_key_file: ~/.ssh/id_rsa_ansible

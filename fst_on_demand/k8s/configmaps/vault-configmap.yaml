@@ -1,0 +1,19 @@
+---
+# infrastructure/k8s/configmaps/vault-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-config
+  namespace: vault
+data:
+  config.hcl: |
+    storage "file" {
+      path = "/vault/data"
+    }
+    listener "tcp" {
+      address     = "0.0.0.0:8200"
+      tls_disable = false
+    }
+    api_addr = "http://vault:8200"
+    cluster_addr = "http://vault:8201"
+    ui = true

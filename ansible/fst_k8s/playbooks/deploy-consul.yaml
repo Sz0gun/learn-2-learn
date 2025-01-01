@@ -1,0 +1,34 @@
+---
+# infrastructure/ansible/playbooks/deploy-consul.yaml
+- name: Deploy Consul
+  hosts: k8s
+  tasks:
+    - name: Ensure Helm is installed
+      ansible.builtin.command:
+        cmd: helm version
+      register: helm_installed
+      failed_when: helm_installed.rc != 0
+
+    - name: Add HashiCorp Helm repository
+      ansible.builtin.command:
+        cmd: helm repo add hashicorp https://helm.releases.hashicorp.com
+      when: helm_installed is succeeded
+
+    - name: Update Helm repositories
+      ansible.builtin.command:
+        cmd: helm repo update
+
+    - name: Deploy Consul
+      ansible.builtin.command:
+        cmd: >
+          helm upgrade --install consul hashicorp/consul \
+          --namespace consul \
+          --create-namespace \
+          --values /tmp/consul-values.yaml
+
+    - name: Wait for Consul pods to be ready
+      ansible.builtin.wait_for:
+        port: 8501
+        host: "{{ inventory_hostname }}"
+        delay: 10
+        timeout: 300

@@ -1,0 +1,37 @@
+---
+# infrastructure/ansible/playbooks/set-nodes-ssh.yaml
+- name: Add user to Kind Cluster Nodes
+  hosts: all
+  become: true
+  tasks:
+    - name: Create a new user
+      ansible.builtin.user:
+        name: m0dern
+        shell: /bin/bash
+        state: present
+        create_home: yes
+
+    - name: Set password for the new user
+      ansible.builtin.command: echo "m0dern:securepassword" | m0dern
+
+    - name: Add user to sudo group
+      ansible.builtin.user:
+        name: m0dern
+        groups: sudo
+        append: true
+
+    - name: Ensure .ssh directory exists
+      ansible.builtin.file:
+        path: /home/m0dern/.ssh
+        state: directory
+        owner: m0dern
+        group: m0dern
+        mode: '0700'
+
+    - name: Copy SSH public key to authorized_keys
+      ansible.builtin.copy:
+        src: ~/.ssh/id_rsa.pub
+        dest: /home/m0dern/.ssh/authorized_keys
+        owner: m0dern
+        group: m0dern
+        mode: '0600'
