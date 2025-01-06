@@ -8,4 +8,4 @@ vault.log
 run_django.sh
 progress.md
 certs
-files_for_recycle
+session_keys.json

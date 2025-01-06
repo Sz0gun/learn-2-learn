@@ -25,11 +25,11 @@
 
 ### **TODO**
 
-**Automation**
+- **Automation**
 Deploy Vault and configure userbot uses Ansible.
-**Monitoring**
+- **Monitoring**
 Userbot interaction with Vault.
-**Extensions**
+- **Extensions**
 CRUD keys in Vault on demand.
 
 ### **Required tokens**
