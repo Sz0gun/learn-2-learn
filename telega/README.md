@@ -1,4 +1,5 @@
 # Architecture from Etcd as backend
+```markdown
 +------------------+                 +------------------+
 |     Userbot      |                 |       Vault      |
 |    (Pyrogram)    |  HTTPS/IPC/gRPC |   (Frontend API) |
@@ -10,7 +11,7 @@
 |     Etcd Node 1  |         |     Etcd Node 2  |        |     Etcd Node 3  |
 |   (Key-Value DB) |  TLS    |   (Key-Value DB) |  TLS   |   (Key-Value DB) |
 +------------------+         +------------------+        +------------------+
-
+```
 
 ## **Userbot integration with HashiCorp Vault**
 
