@@ -1,0 +1,9 @@
+FROM hashicorp/vault:latest
+
+RUN mkdir -p /vault/config/certs
+
+COPY vault/config/vault.hcl /vault/config/vault.hcl
+COPY certs/bot-bee.online.certificate.pem /vault/config/certs/server.crt
+COPY certs/bot-bee.online.key.txt /vault/config/certs/server.key
+
+CMD ["vault", "server", "-config=/vault/config/vault.hcl"]

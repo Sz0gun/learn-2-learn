@@ -1,0 +1,125 @@
+---
+# ansible/vault/init_vault.yml
+- name: Initialize and Unseal Vault
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    ######################################################################
+    # 1. Sprawdzenie, czy Vault jest zainicjalizowany
+    ######################################################################
+    - name: Check Vault health
+      uri:
+        url: "http://127.0.0.1:8200/v1/sys/health"
+        method: GET
+        return_content: yes
+        status_code: [200, 503]
+      register: vault_health
+      ignore_errors: yes
+
+    ######################################################################
+    # 2. Inicjalizacja Vault, jeżeli jeszcze nie został zainicjalizowany
+    ######################################################################
+    - name: Initialize Vault if not initialized
+      uri:
+        url: "http://127.0.0.1:8200/v1/sys/init"
+        method: POST
+        body_format: json
+        body:
+          secret_shares: 5
+          secret_threshold: 3
+        headers:
+          Content-Type: "application/json"
+        status_code: 200
+      register: vault_init
+      when: >
+        (vault_health.status == 503 and (vault_health.json.initialized is not defined or not vault_health.json.initialized)) or
+        (vault_health.status is not defined)
+
+    ######################################################################
+    # 3. Zapis kluczy inicjalizacyjnych tylko jeżeli Vault został teraz zainicjalizowany
+    ######################################################################
+    - name: Save initialization keys if newly initialized
+      copy:
+        content: |
+          {
+            "UnsealKeys": {{ vault_init.json.keys_base64 | to_json }},
+            "RootToken": "{{ vault_init.json.root_token }}"
+          }
+        dest: /home/szogun/vault_init_keys.json
+        owner: "{{ ansible_user }}"
+        mode: '0600'
+      when: vault_init is defined and vault_init.changed
+      tags: init
+
+    ######################################################################
+    # 4. Sprawdzenie, czy plik z kluczami Vaulta istnieje
+    ######################################################################
+    - name: Check if keys file exists
+      stat:
+        path: /home/szogun/vault_init_keys.json
+      register: keys_file
+
+    ######################################################################
+    # 5. Fail if keys file is missing and Vault jest zainicjalizowany
+    ######################################################################
+    - name: Fail if keys file is missing
+      fail:
+        msg: "vault_init_keys.json file is missing. Run initialization to generate it."
+      when: >
+        (vault_health.status == 503 and (vault_health.json.initialized is defined and vault_health.json.initialized)) and
+        not keys_file.stat.exists
+
+    ######################################################################
+    # 6. Odczytanie kluczy z pliku vault_init_keys.json, jeśli jest dostępny
+    ######################################################################
+    - name: Load initialization keys if available
+      slurp:
+        src: /home/szogun/vault_init_keys.json
+      register: saved_keys
+      when: keys_file.stat.exists
+
+    ######################################################################
+    # 7. Konwersja zawartości pliku z kluczami na zmienne Ansible
+    ######################################################################
+    - name: Parse saved keys
+      set_fact:
+        unseal_keys: "{{ (saved_keys.content | b64decode | from_json).UnsealKeys }}"
+      when: keys_file.stat.exists
+
+    ######################################################################
+    # 8. Odpieczętowanie Vaulta – wykonujemy POST dla każdej z kluczy unseal
+    #    tylko wtedy, gdy Vault jest zainicjalizowany, ale zapieczętowany.
+    ######################################################################
+    - name: Unseal Vault
+      uri:
+        url: "http://127.0.0.1:8200/v1/sys/unseal"
+        method: POST
+        body_format: json
+        body:
+          key: "{{ item }}"
+        headers:
+          Content-Type: "application/json"
+        status_code: 200
+      loop: "{{ unseal_keys }}"
+      when: vault_health.json.sealed | default(false)
+
+    ######################################################################
+    # 9. Ponowna weryfikacja stanu Vaulta po odpieczętowaniu
+    ######################################################################
+    - name: Verify Vault status after unseal
+      uri:
+        url: "http://127.0.0.1:8200/v1/sys/health"
+        method: GET
+        status_code: 200
+      register: vault_health_after
+      failed_when: vault_health_after is not defined or vault_health_after.json | default({}).initialized is not defined
+      tags: verify
+
+    ######################################################################
+    # 10. Wyświetlenie statusu Vaulta
+    ######################################################################
+    - name: Display Vault status
+      debug:
+        msg: "Vault initialized: {{ vault_health_after.json.initialized }}, Sealed: {{ vault_health_after.json.sealed }}"
+      when: vault_health_after.json | default({}) is defined
+      tags: verify
