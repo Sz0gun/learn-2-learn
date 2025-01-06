@@ -12,7 +12,7 @@
         "django": {
           "startCommand": "python django_fst/manage.py runserver 0.0.0.0:$PORT",
           "envVars": {
-            "DJANGO_SETTINGS_MODULE": "core.settings.prod",
+            "DJANGO_SETTINGS_MODULE": "core.settings",
             "PORT": "8000"
           }
         }
