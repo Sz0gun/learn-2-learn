@@ -1,57 +1,51 @@
-# dj_rest/core/settings/base.py
-
+import os
 from pathlib import Path
-from shared.settings import config
 
-# from rest_fabric_control.utils import validate_vault_connection
-
-# # Check the connection with Vault
-# vault_client = validate_vault_connection()
-
-# # Download secrets
-# secrets = vault_client.secrets.kv.v2.read_secret_version(path='learn-2-learn')
-
-# SECRET_KEY = secrets['data']['data']['SECRET_KEY']
-
-SECRET_KEY = config.DJANGO_SECRET_KEY
-DEBUG = config.DJANGO_DEBUG
+# Ścieżka do katalogu głównego projektu
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-ALLOWED_HOSTS = config.ALLOWED_HOSTS
 
+# Klucz tajny (upewnij się, że ten klucz jest przechowywany w zmiennej środowiskowej w produkcji)
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-secret-key')
+
+# Debugowanie (domyślnie wyłączone, wymaga ręcznego ustawienia dla developmentu)
+DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
+
+# Domyślne dozwolone hosty
+ALLOWED_HOSTS = []
+
+# Aplikacje Django
 INSTALLED_APPS = [
-    'user_management',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
+    # Twoje aplikacje
     'rest_framework',
     'rest_fabric_control',
+    'user_manager',
 ]
 
-AUTH_USER_MODEL = 'user_management.CustomUser'
-
+# Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = config.CORS_ALLOWED_ORIGINS
-
+# Główny adres URL
 ROOT_URLCONF = 'core.urls'
 
+# Szablony
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,15 +58,44 @@ TEMPLATES = [
     },
 ]
 
-
-
+# Silnik WSGI
 WSGI_APPLICATION = 'core.wsgi.application'
-ASGI_APPLICATION = 'core.asgi.application'
 
+# Baza danych (domyślna SQLite dla developmentu)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+# Walidacja haseł
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# Międzynarodowość
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
+# Pliki statyczne
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-TEST_RUNNER = 'django.test.runner.DiscoverRunner'
-
+# Media
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

@@ -1,26 +1,30 @@
-# dj_rest/core/settings/prod.py
-from .base import *
+from .base import *  # Importuj wszystkie ustawienia z base.py
 
+# Debugowanie wyłączone w środowisku produkcyjnym
 DEBUG = False
 
+# Lista dozwolonych hostów
+ALLOWED_HOSTS = ['*.up.railway.app']
+
+# Klucz tajny musi być ustawiony w środowisku produkcyjnym
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+
+# Konfiguracja bazy danych PostgreSQL
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config.PSQL_DB_PROD,
-        'USER': config.PSQL_USER_PROD,
-        'PASSWORD': config.PSQL_PASSWORD_PROD,
-        'HOST': config.PSQL_HOST_PROD,
-        'PORT': config.PSQL_PORT_PROD,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-# Security settings
-SECURE_SSL_REDIRECT = True
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_BROWSER_XSS_FILTER = True
+# Pliki statyczne w produkcji
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Zabezpieczenia
+SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
