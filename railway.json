@@ -3,24 +3,17 @@
       "builder": "NIXPACKS",
       "nixpacksConfig": {
         "install": [
-          "pip install -r requirements.txt"
+          "pip install -r django_fst/requirements.txt"
         ]
       }
     },
     "deploy": {
       "services": {
         "django": {
-          "startCommand": "python manage.py runserver 0.0.0.0:$PORT",
-          "buildCommand": "pip install -r requirements.txt",
+          "startCommand": "python django_fst/manage.py runserver 0.0.0.0:$PORT",
           "envVars": {
             "DJANGO_SETTINGS_MODULE": "core.settings.prod",
             "PORT": "8000"
-          }
-        },
-        "vault": {
-          "startCommand": "vault server -config=/vault/config/vault.hcl",
-          "envVars": {
-            "VAULT_ADDR": "http://127.0.0.1:8200"
           }
         }
       }
