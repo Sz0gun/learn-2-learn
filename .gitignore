@@ -7,3 +7,5 @@ vault.log
 *_initial.py
 run_django.sh
 progress.md
+certs
+files_for_recycle
