@@ -45,3 +45,102 @@ CRUD keys in Vault on demand.
 - Telethon p2p
 - Inter-Process Communication (Unix Domain Sockets)
 - Instead of using the HTTP API, use HashiCorp Vault SDK (data is transfred directly in aplication memory).
+
+
+---
+
+###  **Launching Userbot and Testing the Connection to Vault** 
+
+####  **1. Starting Userbot** 
+
+1. In the file`telega/session_keys.json`make sure you have the correct keys`api_id`and`api_hash`: : 
+ 
+   ```json
+   {
+       "api_id": "123456",
+       "api_hash": "abcdef1234567890"
+   }
+   ```
+
+2. Generate a userbot session by running the script:
+
+   ```bash
+   python telega/generate_session.py
+   ```
+Follow the instructions in the terminal (e.g. enter your Telegram authorization code).
+
+3. >>>todo Start userbot: 
+
+   ```bash
+   python telega/userbot.py
+   ```
+
+4. >>>todo Open Telegram and send a message to the userbot with the command`/get_keys`. If everything works correctly, the bot will respond: 
+ 
+   ```
+   API_ID: 123456
+   API_HASH: abcdef1234567890
+   ```
+
+---
+
+####  **2. Vault Configuration in the Local Environment** 
+
+1.  **Set Vault environment variables:**  
+ 
+`.env` in project root directory:
+   ```env
+   VAULT_ADDR=http://127.0.0.1:8200
+   VAULT_TOKEN=your_token
+   ```
+
+2.  **Loading environment variables in Python:**  
+ 
+>>>todo `userbot.py` code to load environment variables:
+   ```python
+   import os
+   from dotenv import load_dotenv
+
+   load_dotenv()
+
+   VAULT_ADDR = os.getenv("VAULT_ADDR")
+   VAULT_TOKEN = os.getenv("VAULT_TOKEN")
+   ```
+
+3.  **Storing keys in Vault:**  
+
+Launch Vault in your development environment:
+   ```bash
+   vault server -dev
+   ```
+
+Log in to Vault:
+   ```bash
+   export VAULT_ADDR=http://127.0.0.1:8200
+   export VAULT_TOKEN=your_token
+   ```
+
+Add Telegram API keys to Vault:
+   ```bash
+   vault kv put secret/telegram api_id=123456 api_hash=abcdef1234567890
+   ```
+
+4. **Testing your connection to Vault**
+
+Check if Vault is working properly, use:
+```bash
+   curl --header "X-Vault-Token: your_token" http://127.0.0.1:8200/v1/sys/health
+   ```
+Expected result:
+   ```json
+   {
+       "initialized": true,
+       "sealed": false,
+       "standby": false
+   }
+   ```
+
+Check the keys stored in Vault:
+```bash
+   vault kv get secret/telegram
+   ```
