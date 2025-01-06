@@ -11,6 +11,7 @@
 |   (Key-Value DB) |  TLS    |   (Key-Value DB) |  TLS   |   (Key-Value DB) |
 +------------------+         +------------------+        +------------------+
 
+
 ## **Userbot integration with HashiCorp Vault**
 
 ### **Main assumptions**
