@@ -5,7 +5,4 @@ vault.log
 *__init__.py
 */migrations/
 *_initial.py
-run_django.sh
-progress.md
-certs
-session_keys.json
+telega/session_keys.json
