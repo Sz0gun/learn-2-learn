@@ -3,7 +3,7 @@
       "builder": "NIXPACKS",
       "nixpacksConfig": {
         "install": [
-          "pip install -r requirements.txt"
+          "pip install -r django_fst/requirements.txt"
         ]
       }
     },
@@ -12,8 +12,7 @@
         "django": {
           "startCommand": "python django_fst/manage.py runserver 0.0.0.0:$PORT",
           "envVars": {
-            "DJANGO_SETTINGS_MODULE": "core.settings",
-            "PORT": "8000"
+            "DJANGO_SETTINGS_MODULE": "core.settings"
           }
         }
       }
