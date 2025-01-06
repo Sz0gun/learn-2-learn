@@ -21,10 +21,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Twoje aplikacje
-    'rest_framework',
-    'rest_fabric_control',
-    'user_manager',
 ]
 
 # Middleware
