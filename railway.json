@@ -3,7 +3,7 @@
       "builder": "NIXPACKS",
       "nixpacksConfig": {
         "install": [
-          "pip install -r django_fst/requirements.txt"
+          "pip install -r requirements.txt"
         ]
       }
     },
