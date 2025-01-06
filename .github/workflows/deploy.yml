@@ -25,7 +25,7 @@ jobs:
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          railway login --token $RAILWAY_TOKEN
+          railway login
 
       # Wykonanie wdrożenia
       - name: Deploy to Railway
