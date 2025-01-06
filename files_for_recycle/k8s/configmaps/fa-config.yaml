@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: fa-config
-  namespace: default
-data:
-    FASTAPI_ENV: production
