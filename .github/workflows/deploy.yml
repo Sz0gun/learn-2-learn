@@ -1,5 +1,5 @@
 ---
-name: Deploy to Railway
+name: CI/CD for Railway
 
 on:
   push:
@@ -11,23 +11,5 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Sprawdzenie repozytorium
       - name: Checkout code
         uses: actions/checkout@v3
-
-      # Instalacja Railway CLI
-      - name: Install Railway CLI
-        run: |
-          npm install -g @railway/cli
-
-      # Zalogowanie do Railway
-      - name: Login to Railway
-        env:
-          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
-        run: |
-          railway login
-
-      # Wykonanie wdrożenia
-      - name: Deploy to Railway
-        run: |
-          railway up --verbose
