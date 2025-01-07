@@ -25,41 +25,43 @@ By mastering these tools and frameworks, the project aims to unlock innovative A
 - **Dynamic Configuration:** Environment-based settings for development and production.
 
 ---
-
-## Tech Stack
-
-- **Backend:** Django, FastAPI
-- **Frontend:** HTML5 (future integration with Telegram Web Apps planned) | Nginx with Apache
-- **Database:** PostgreSQL, CouchDB (future)
-- **Tools:** Vault, Elasticsearch, Redis, Docker Engine, Kubernetes, Ansible
-- **Languages:** Python
-
----
-
 ## Project Structure
 
 ```
 learn-2-learn/
-├── dj_rest/                  # Django backend
-│   ├── core/                 # Core app for project settings, environment configurations, and utilities.
-│   ├── rest_fabric_control/  # Handles integration with Vault and Elasticsearch for secure data management and centralized logging.
-│   ├── user_management/      # Custom user model and management features, including Telegram-related fields.
-│   └── manage.py             # Entry point for Django's management commands.
-├── tg/                       # Contains Telegram bot logic, including handlers for user interactions and commands.
-├── fa/                       # FastAPI modules for additional microservices or APIs to extend functionality.
-├── shared/                   # Stores shared configurations, constants, and reusable utilities used across apps.
-├── ansible/                  # Playbooks for automation of deployment and secret management.
-├── k8s/                      # Kubernetes manifests for deploying services.
-├── Dockerfile                # Defines the containerized setup for the project.
-├── run_django.sh             # A script to initialize Django, Vault, and Elasticsearch for development.
-└── requirements.txt          # Specifies Python dependencies for the project.
+├── django_fst/               # Django Fast backend (currently considering the most convenient way for the project to integrate with Telegram and FastAPI to achieve asynchronous communication)
+│   ├── core/                 
+│   ├── user_management/      # Custom user model and management features based on Telegram user data.
+│   └── manage.py             
+├── telega/                   # Centralized integration with Vault for manage Clients secret between the APIs. Contains Telegram bot logic, including handlers for user interactions and commands.
+├── fst_on_demand/            # FastAPI modules for additional microservices which will be run on the provider's cloud cluster for AI training.
+├── ansible/                  
+├── k8s/                      
+├── Dockerfile                
+└── requirements.txt          
 ```
+---
+
+### */telega/*
+![alt text](tg-2025-01-06-221857.png)
 
 ---
 
-## Kubernetes and Ansible Implementation Plan
+## Tech Stack
 
-### **1. Implementation Goals**
+- **Backend:** Django ORM, FastAPI, Telegram API
+- **Frontend:** HTML5 (future integration with Telegram Web Apps planned) | Nginx with Apache
+- **Database:** PostgreSQL, CouchDB (future), Etcd
+- **Tools:** Vault, Ingress, Helm Charts, Ansible, Redis, Celery, Docker, Kubernetes
+- **Languages:** Python
+
+---
+### *Infrastructure as a sketch pattern*
+![alt text](1734933424306.jpeg)
+
+---
+
+### **Implementation Goals**
 - **API Management Automation:** Use Kubernetes for application orchestration (Django, FastAPI) and Ansible for configuration automation.
 - **Service Bots:** Deploy isolated Telegram bots in Kubernetes pods for secure inter-service communication.
 - **Secrets Management:** Integrate HashiCorp Vault with Kubernetes for secure secrets management and dynamic updates.
@@ -68,7 +70,7 @@ learn-2-learn/
 
 ---
 
-### **2. Kubernetes Deployment Plan**
+### **Kubernetes Deployment Plan**
 
 #### **Services Overview**
 - **Django Pod:** Handles backend logic and database operations.
@@ -77,8 +79,6 @@ learn-2-learn/
 - **Telegram Bots:** Each bot runs in a dedicated pod to securely communicate with its corresponding service.
 
 ---
-
-### **3. Ansible Playbooks**
 
 #### **Automation Workflow**
 1. **Vault Initialization:**
@@ -93,7 +93,7 @@ learn-2-learn/
 
 ---
 
-### **4. Service Bots**
+### **Service Bots**
 
 #### **Vault Bot**
 - Manages unsealing and status checks for Vault.
@@ -107,19 +107,5 @@ Each bot is deployed as a pod with a minimal Docker image and uses Helm Charts f
 
 ---
 
-## Installation
-
-[Follow the previous detailed installation steps, ensuring proper setup of Kubernetes and Ansible tools.]
-
----
-
-## Contribution
-
-We welcome contributions! Please fork the repository, create a feature branch, and submit a pull request.
-
----
-
-## Contacts
-- **Project Maintainer:** Beaver (Telegram: @b3av3r)
-
----
+## Endpoint for pinging 🗺
+- **Free-thinker🤓** Beaver (🔗🇺🇦🇵🇱 [@b3av3r](https://t.me/b3av3r))
