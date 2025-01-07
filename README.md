@@ -1,4 +1,6 @@
 # Learn-2-Learn (L2L)
+*Currently in the planning stage, you will only find some theory here*
+
 
 ## Overview
 
