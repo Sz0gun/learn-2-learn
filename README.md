@@ -10,6 +10,8 @@ The platform leverages advanced techniques for secure data storage and transmiss
 
 By mastering these tools and frameworks, the project aims to unlock innovative AI-driven solutions, from social media content generation to secure API management, within a collaborative ecosystem.
 
+[secrets_roadmap](docs/secrets_roadmap.md)
+![alt text](<docs/secrets roadmap.png>)
 ---
 
 ## Features
@@ -25,13 +27,6 @@ By mastering these tools and frameworks, the project aims to unlock innovative A
 - **Multi-database Support:** Integration with PostgreSQL, Redis, CouchDB, and PouchDB for optimized data handling.
 - **Asynchronous Processing:** Built-in support for async operations, improving performance.
 - **Dynamic Configuration:** Environment-based settings for development and production.
-
-
----
-
-### */telega/*
-![alt text](secrets.png)
-![alt text](cicd.png)
 
 ---
 
