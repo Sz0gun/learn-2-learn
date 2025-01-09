@@ -26,26 +26,12 @@ By mastering these tools and frameworks, the project aims to unlock innovative A
 - **Asynchronous Processing:** Built-in support for async operations, improving performance.
 - **Dynamic Configuration:** Environment-based settings for development and production.
 
----
-## Project Structure
 
-```
-learn-2-learn/
-├── django_fst/               # Django Fast backend (currently considering the most convenient way for the project to integrate with Telegram and FastAPI to achieve asynchronous communication)
-│   ├── core/                 
-│   ├── user_management/      # Custom user model and management features based on Telegram user data.
-│   └── manage.py             
-├── telega/                   # Centralized integration with Vault for manage Clients secret between the APIs. Contains Telegram bot logic, including handlers for user interactions and commands.
-├── fst_on_demand/            # FastAPI modules for additional microservices which will be run on the provider's cloud cluster for AI training.
-├── ansible/                  
-├── k8s/                      
-├── Dockerfile                
-└── requirements.txt          
-```
 ---
 
 ### */telega/*
-![alt text](tg-2025-01-06-221857.png)
+![alt text](secrets.png)
+![alt text](cicd.png)
 
 ---
 
@@ -54,12 +40,12 @@ learn-2-learn/
 - **Backend:** Django ORM, FastAPI, Telegram API
 - **Frontend:** HTML5 (future integration with Telegram Web Apps planned) | Nginx with Apache
 - **Database:** PostgreSQL, CouchDB (future), Etcd
-- **Tools:** Vault, Ingress, Helm Charts, Ansible, Redis, Celery, Docker, Kubernetes
+- **Tools:** Vault, Ingress, Helm Charts, Redis, Celery, Docker, Kubernetes
 - **Languages:** Python
 
 ---
 ### *Infrastructure as a sketch pattern*
-![alt text](1734933424306.jpeg)
+![alt text](pattern.jpeg)
 
 ---
 
@@ -71,41 +57,89 @@ learn-2-learn/
 - **Scalability:** Enable dynamic scaling of services based on usage patterns.
 
 ---
+### **Services Replaced by Telegram Userbot**
 
-### **Kubernetes Deployment Plan**
+#### 1. **Ingress**
+- **Replaced Functionality:**
+  - Traditional ingress services handle routing and load balancing for APIs.
+- **Userbot Implementation:**
+  - The userbot simplifies API interaction by directly managing service communication. 
+  - Example: The userbot triggers Django service startup and monitors its availability via health endpoints.
 
-#### **Services Overview**
-- **Django Pod:** Handles backend logic and database operations.
-- **FastAPI Pod:** Serves lightweight asynchronous APIs.
-- **Vault Pod:** Manages secrets and integrates with the backend for dynamic configuration.
-- **Telegram Bots:** Each bot runs in a dedicated pod to securely communicate with its corresponding service.
+#### 2. **Secrets Management via Kubernetes Secrets**
+- **Replaced Functionality:**
+  - Kubernetes Secrets are commonly used for managing sensitive data.
+- **Userbot Implementation:**
+  - Secrets are fetched dynamically from Vault by the userbot and stored temporarily in Redis or injected as environment variables directly into running containers.
+
+#### 3. **Monitoring Tools (e.g., Prometheus, Grafana)**
+- **Replaced Functionality:**
+  - Conventional monitoring tools visualize service health and metrics.
+- **Userbot Implementation:**
+  - The userbot periodically pings service endpoints (e.g., `/health`) and logs the results.
+  - Alerts can be sent to a Telegram chat for real-time monitoring.
+
+#### 4. **Configuration Management Tools**
+- **Replaced Functionality:**
+  - Tools like Ansible or Terraform manage dynamic service configurations.
+- **Userbot Implementation:**
+  - The userbot acts as the configuration agent by:
+    - Fetching secrets from Vault.
+    - Injecting environment variables or creating runtime configurations for Django and FastAPI.
 
 ---
 
-#### **Automation Workflow**
-1. **Vault Initialization:**
-   - Playbook: `init_vault_secrets.yaml`
-   - Initializes Vault and stores keys for unsealing.
-2. **Deployment to Kubernetes:**
-   - Playbook: `deploy_k8s.yaml`
-   - Deploys Kubernetes manifests for services and bots.
-3. **Secrets Management:**
-   - Playbook: `manage_secrets.yaml`
-   - Updates secrets dynamically for all services.
+### **Workflow: How the Telegram Userbot Replaces Services**
+
+1. **Initialization**
+   - The userbot starts with basic credentials (`TG_API_ID`, `TG_API_HASH`).
+   - Establishes a secure connection with Vault to authenticate and fetch tokens.
+
+2. **Secrets Management**
+   - Secrets are retrieved from Vault using the Vault SDK and temporarily stored in Redis.
+   - Secrets are injected into services dynamically, reducing the need for static configurations.
+
+3. **Service Startup**
+   - The userbot triggers service containers (e.g., Django, FastAPI) using Kubernetes or Docker APIs.
+   - Secrets and configurations are passed to the services during runtime.
+
+4. **Monitoring and Alerts**
+   - The userbot periodically queries health endpoints of services (e.g., `/health`, `/metrics`).
+   - Alerts or status updates are sent to a Telegram chat for real-time visibility.
 
 ---
 
-### **Service Bots**
+### **Benefits of Using the Telegram Userbot**
 
-#### **Vault Bot**
-- Manages unsealing and status checks for Vault.
-- Ensures secure integration with other services.
+1. **Security**
+   - Eliminates persistent storage of secrets in files or environment variables.
+   - Reduces attack surface by centralizing secrets management in Vault.
 
-#### **Django Bot**
-- Handles user interaction, service health checks, and command-driven operations.
+2. **Cost Efficiency**
+   - Replaces expensive infrastructure services (e.g., Ingress, Prometheus) with a lightweight, single-threaded bot.
 
-#### **Bot Architecture**
-Each bot is deployed as a pod with a minimal Docker image and uses Helm Charts for easy scaling and configuration management.
+3. **Simplicity**
+   - Centralizes orchestration, secrets management, and monitoring in a single service.
+
+4. **Flexibility**
+   - Easily integrates with existing Telegram workflows.
+   - Adaptable to various service configurations and environments.
+
+---
+
+### **Potential Limitations and Mitigations**
+
+#### **1. Single Point of Failure**
+   - **Issue:** The userbot is central to the architecture, and its failure could disrupt operations.
+   - **Mitigation:** Deploy the bot in a highly available setup (e.g., Kubernetes pod with restart policies).
+
+#### **2. Latency in Secrets Management**
+   - **Issue:** Fetching secrets dynamically may introduce delays.
+   - **Mitigation:** Utilize Redis for caching frequently accessed secrets.
+
+#### **3. Scalability Concerns**
+   - **Issue:** A single bot may struggle with heavy traffic or multiple service requests.
+   - **Mitigation:** Deploy multiple instances of the bot, with each managing a subset of services.
 
 ---
 

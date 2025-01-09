@@ -6,3 +6,4 @@ vault.log
 */migrations/
 *_initial.py
 telega/session_keys.json
+env.txt
