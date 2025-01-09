@@ -39,8 +39,8 @@ By mastering these tools and frameworks, the project aims to unlock innovative A
 
 - **Backend:** Django ORM, FastAPI, Telegram API
 - **Frontend:** HTML5 (future integration with Telegram Web Apps planned) | Nginx with Apache
-- **Database:** PostgreSQL, CouchDB (future), Etcd
-- **Tools:** Vault, Ingress, Helm Charts, Redis, Celery, Docker, Kubernetes
+- **Database:** PostgreSQL, CouchDB (future), IPFS
+- **Tools:** Vault, Web3, Ingress, Helm Charts, Redis, Celery, Docker, Kubernetes
 - **Languages:** Python
 
 ---
