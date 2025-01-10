@@ -10,8 +10,9 @@ The platform leverages advanced techniques for secure data storage and transmiss
 
 By mastering these tools and frameworks, the project aims to unlock innovative AI-driven solutions, from social media content generation to secure API management, within a collaborative ecosystem.
 
-[secrets_roadmap](docs/secrets_roadmap.md)
-![alt text](<docs/secrets roadmap.png>)
+[secret management](docs/secrets_roadmap.md)
+![alt text](docs/secret.png)
+
 ---
 
 ## Features
